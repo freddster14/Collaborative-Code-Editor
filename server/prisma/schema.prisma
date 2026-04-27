@@ -11,3 +11,49 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  username    String    @unique
+  hashedPass  String
+  createdAt   DateTime  @default(now())
+}
+
+model Document {
+  id          Int       @id @default(autoincrement())
+  name        String
+  doc         Bytes     @db.ByteA
+  folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId    Int
+  createdAt   DateTime  @default(now())
+}
+
+model Folder {
+  id        Int   @id @default(autoincrement())
+  parentId  Int?
+  name      String
+  createdAt DateTime  @default(now())
+  documents Document[]
+
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDIT
+  VIEW
+}
+
+model UserDocuments {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  documentId  Int  
+  role        Role        @default(VIEW)
+  createdAt   DateTime    @default(now())
+  views       Int         @default(0)
+  viewAt      DateTime    @updatedAt
+  
+  @@unique([userId, documentId]) // Prevent duplicate entries
+  @@index([userId]) // Fast lookup for users' documents
+}
