@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": "./src",
+    "rootDir": "../",
     "outDir": "./dist",
 
     // Environment Settings
@@ -26,6 +26,8 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "strict": true,
     "jsx": "react-jsx",
