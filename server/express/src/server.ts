@@ -1,11 +1,8 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import errorHandling from './middlewares/error-handling.js';
 import index from './routes/index.js';
-
-dotenv.config();
 
 const app = express();
 app.use(cookieParser())
