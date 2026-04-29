@@ -19,7 +19,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     })
     
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, jti: crypto.randomUUID() },
       requireEnv("SECRET"),
       { expiresIn: "5d" }
     )
@@ -48,13 +48,13 @@ export const signInUser = async (req: Request, res: Response, next: NextFunction
       user = await prisma.user.findUnique({ where: { username: identifier }})
     }
 
-    if(!user) return res.status(400);
+    if(!user) return res.status(400).send("Invalid credentials");
 
     const isMatch = await bcrypt.compare(password, user.hashedPass);
-    if(!isMatch) return res.status(400)
+    if(!isMatch) return res.status(400).send("Invalid credentials")
 
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, jti: crypto.randomUUID() },
       requireEnv("SECRET"),
       { expiresIn: "5d" }
     )
@@ -74,5 +74,6 @@ export const signInUser = async (req: Request, res: Response, next: NextFunction
 }
 
 export const getUser = async (req: Request, res:Response, next: NextFunction) => {
-  console.log(req.user)
+  res.status(200).json(req.user)
 }
+

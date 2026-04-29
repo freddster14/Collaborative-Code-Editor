@@ -15,6 +15,7 @@ export interface UserToken {
   id: number,
   username: string,
   iat: number,
-  exp: number
+  exp: number,
+  jti: number
 }
 

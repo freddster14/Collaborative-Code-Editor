@@ -23,7 +23,7 @@ model User {
 model Document {
   id          Int       @id @default(autoincrement())
   name        String
-  doc         Bytes     @db.ByteA
+  doc         Bytes?     @db.ByteA
   folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId    Int
   createdAt   DateTime  @default(now())
