@@ -154,7 +154,7 @@ export const generateWebsocketToken = async (req: Request, res:Response, next: N
     if(!authorized) return res.status(404).send("Not authotorized/Page not found")
       
     const wsToken = jwt.sign(
-      { id: docId },
+      { id: docId, userId: req.user.id, username: req.user.username },
       requireEnv("SECRET"),
       { expiresIn: 1000 * 60 * 15 } // 15min
     )
