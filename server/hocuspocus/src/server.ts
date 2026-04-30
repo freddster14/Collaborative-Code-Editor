@@ -9,6 +9,8 @@ import * as Y from "yjs";
 const server = new Server({
   name: 'hocuspocus-cce-01',
   port: 1234,
+  debounce: 1000 * 60 * 3,
+  maxDebounce: 1000 * 60 * 15,
   async onAuthenticate(data) {
     const { token } = data;
     const { requestParameters } = data;
@@ -36,6 +38,35 @@ const server = new Server({
     }
     
     return ydoc
+  },
+  async onStoreDocument(data) {
+    const { document, lastContext } = data;
+    const doc = Y.encodeStateAsUpdate(document)
+    const encodedDoc = Buffer.from(doc).toString('base64')
+    const uint8Array = Buffer.from(doc)
+    await Promise.all([
+      redis.set(`doc:${lastContext.id}`, encodedDoc),
+      redis.persist(`doc:${lastContext.id}`),
+      prisma.document.update({
+        where: { id: lastContext.id },
+        data: { doc: uint8Array }
+      })
+    ])
+  },
+  async onDisconnect(data) {
+    const { document, context, clientsCount } = data;
+    if (clientsCount === 0) {
+      const doc = Y.encodeStateAsUpdate(document);
+      const encodedDoc = Buffer.from(doc).toString('base64');
+      const uint8Array = Buffer.from(doc);
+      await Promise.all([
+        redis.set(`doc:${context.id}`, encodedDoc, { EX: 60 * 60 * 24 }), // 1 day
+        prisma.document.update({
+          where: { id: context.id },
+          data: { doc: uint8Array }
+        })
+      ])
+    }
   }
 });
 
