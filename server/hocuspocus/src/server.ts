@@ -11,6 +11,9 @@ const server = new Server({
   port: 1234,
   debounce: 1000 * 60 * 3,
   maxDebounce: 1000 * 60 * 15,
+  async connected(data) {
+    console.log("onConnect", data)
+  },
   async onAuthenticate(data) {
     const { token } = data;
     const { requestParameters } = data;
@@ -69,5 +72,4 @@ const server = new Server({
     }
   }
 });
-
 server.listen()
