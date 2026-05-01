@@ -1,15 +1,12 @@
-import { useUser } from "../context/user";
+import { Outlet } from "react-router-dom";
 import { ProtectedRoutes } from "../routes/protected-routes";
+import Nav from "../components/Nav";
 
 export default function Dashboard() {
-  const { user } = useUser();
   return (
     <ProtectedRoutes>
-    <div>
-        <h1>Dashboard</h1>
-        <p>Welcome to your dashboard</p>
-        <p>Username: {user?.username}</p>
-      </div>
+      <Nav />
+      <Outlet />
     </ProtectedRoutes>
   );
 }

@@ -3,6 +3,8 @@ import Home from "../pages/Home.tsx";
 import SignUp from "../pages/SignUp.tsx";
 import SignIn from "../pages/SignIn.tsx";
 import Dashboard from "../pages/Dashboard.tsx";
+import Documents from "../components/Documents.tsx";
+import Editor from "../pages/Editor.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,12 +22,16 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     Component: Dashboard,
-    // children: [
-    //   {
-    //     path: "/dashboard/documents",
-    //     Component: Documents,
-    //   },
-    // ],
+    children: [
+      {
+        index: true,
+        Component: Documents,
+      },
+      {
+        path: "edit/:docId",
+        Component: Editor,
+      }
+    ],
   },
 ]);
 
