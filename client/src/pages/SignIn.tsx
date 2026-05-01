@@ -6,17 +6,20 @@ import { Link, useNavigate } from "react-router-dom";
 export default function SignIn() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { setUser } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await postRequest("/api/sign-in", { identifier, password });
+      const res = await postRequest("/sign-in", { identifier, password });
       setUser(res);
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsSubmitting(false)
     }
   };
 
@@ -30,7 +33,7 @@ export default function SignIn() {
       <form onSubmit={handleSubmit}>
         <input type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Sign In</button>
+        <button type="submit" disabled={isSubmitting} onClick={() => setIsSubmitting(prev => !prev)}>{isSubmitting? "Signing in..." : "Sign In"}</button>
       </form>
     </div>
   );
