@@ -74,7 +74,6 @@ export default function Binding() {
       for(let i = 0; i < removed.length; i++) {
         document.getElementById(`cursor-${removed[i]}`)?.remove()
       }
-
     })
    
     provider.awareness.setLocalStateField('user', {
@@ -84,7 +83,11 @@ export default function Binding() {
     setProvider(provider);
     return () => {
       provider?.destroy();
-      ydoc.destroy()
+      ydoc.destroy();
+
+      // Remove style tags
+      const styleTags = document.querySelectorAll('[id^="cursor-"]')
+      styleTags.forEach(e => { e.remove() });
     }
   }, [ydoc, token])
 
@@ -102,6 +105,6 @@ export default function Binding() {
 
 
   return (
-    <Editor height="90vh" defaultLanguage='javascript' onMount={editor => { setEditor(editor)}}/>
+    <Editor height="90vh" defaultLanguage='javascript' theme='vs-dark' onMount={editor => { setEditor(editor)}}/>
   )
 }
