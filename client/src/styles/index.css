@@ -86,20 +86,10 @@ h1 {
 }
 
 .yRemoteSelectionHead {
-  border-left: 2px solid orange; 
   position: relative;
 }
 
-.yRemoteSelectionHead::after { 
-  content: "user"; 
-  background-color: orange;
-  position: absolute;
-  top: -15px;
-  left: -2px;
-  font-size: 10px;
-  color: white;
-  padding: 0 2px;
-}
+
 
 
 h2 {

@@ -24,6 +24,7 @@ const server = new Server({
     if(!token) throw Error("No token provided");
 
     const payload = jwt.verify(token, requireEnv("SECRET")) as WSToken
+
     if(payload.id !== docId) throw Error("Invalid Token");
     return payload
   },

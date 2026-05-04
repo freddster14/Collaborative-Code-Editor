@@ -1,11 +1,12 @@
 import * as Y from 'yjs';
 import { MonacoBinding } from 'y-monaco';
 import { Editor } from '@monaco-editor/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../context/user';
 import { getRequest } from '../api/api-requests';
+import generateDarkColor from '../utils/generateColor';
 
 export default function Binding() {
   const { user } = useUser();
@@ -39,12 +40,46 @@ export default function Binding() {
       url: 'ws://127.0.0.1:1234',
       name: `document-${docId}`,
       document: ydoc,
+      onAuthenticationFailed: () => {
+        navigate(-1)
+      },
       token
     });
+    provider.awareness.on("change", (c) => {
+      const added = c.added;
+      const removed = c.removed;
+      const states = provider.awareness.getStates();
+      for(let i = 0; i < added.length; i++) {
+        const styleTag = document.createElement('style');
+        styleTag.id = `cursor-${added[i]}`
+        const userStateFields = states.get(added[i]);
+        styleTag.innerHTML = `
+          .yRemoteSelectionHead-${added[i]} {
+            border: 1px solid ${userStateFields.user.color};
+          }
+          .yRemoteSelectionHead-${added[i]}::after {
+            content: "${userStateFields.user.name}";
+            background-color: ${userStateFields.user.color};
+            position: absolute;
+            top: -15px;
+            left: -2px;
+            font-size: 10px;
+            color: white;
+            padding: 0 2px;
+          }
+            
+        `
+        document.head.appendChild(styleTag)
+      }
+      for(let i = 0; i < removed.length; i++) {
+        document.getElementById(`cursor-${removed[i]}`)?.remove()
+      }
+
+    })
+   
     provider.awareness.setLocalStateField('user', {
-      name: 'User ' + Math.floor(Math.random() * 100),
-      color: 'orange', // Can be used for dynamic coloring
-      colorLight: 'rgba(255, 165, 0, 0.2)'
+      name: user.username,
+      color: generateDarkColor(),
     });
     setProvider(provider);
     return () => {
