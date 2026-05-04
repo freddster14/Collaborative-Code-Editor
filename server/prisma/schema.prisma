@@ -18,6 +18,7 @@ model User {
   username    String    @unique
   hashedPass  String
   createdAt   DateTime  @default(now())
+  documents   UserDocuments[]
 }
 
 model Document {
@@ -26,6 +27,7 @@ model Document {
   doc         Bytes?     @db.ByteA
   folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId    Int
+  users       UserDocuments[]
   createdAt   DateTime  @default(now())
 }
 
@@ -48,7 +50,9 @@ enum Role {
 model UserDocuments {
   id          Int         @id @default(autoincrement())
   userId      Int
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   documentId  Int  
+  document    Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
   role        Role        @default(VIEW)
   createdAt   DateTime    @default(now())
   views       Int         @default(0)

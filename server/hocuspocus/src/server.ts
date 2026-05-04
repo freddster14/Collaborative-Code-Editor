@@ -6,18 +6,19 @@ import redis from "../redis.js";
 import { prisma } from "../../prisma/client.js";
 import * as Y from "yjs";
 
+await redis.connect()
+
 const server = new Server({
   name: 'hocuspocus-cce-01',
   port: 1234,
   debounce: 1000 * 60 * 3,
   maxDebounce: 1000 * 60 * 15,
   async connected(data) {
-    console.log("onConnect", data)
+    console.log("user connected")
   },
   async onAuthenticate(data) {
-    const { token } = data;
-    const { requestParameters } = data;
-    const docId = Number(requestParameters.get('docId'))
+    const { token, documentName } = data;
+    const docId = Number(documentName.slice(9));
 
     if(!docId) throw Error("No doc id provided");
     if(!token) throw Error("No token provided");
@@ -39,7 +40,15 @@ const server = new Server({
       const uint8Array = Buffer.from(dbData.doc)
       Y.applyUpdate(ydoc, uint8Array)
     }
-    
+    await prisma.userDocuments.update({
+      where: { userId_documentId: {
+        userId: context.userId,
+        documentId: context.id
+      }},
+      data: {
+        views: { increment: 1 }
+      }
+    });
     return ydoc
   },
   async onStoreDocument(data) {

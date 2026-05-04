@@ -3,6 +3,7 @@ import { prisma } from "../../../prisma/client.ts";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { PRIVILED_ROLES } from "../utils/constants.ts";
+import document from "../routes/document.ts";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId = Number(req.params.folderId);
@@ -28,6 +29,27 @@ export const createDoc = async (req: Request, res: Response, next: NextFunction)
     res.status(201).json(doc)
   } catch (error) {
     next(error);
+  }
+}
+
+
+export const recentDocs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const docs = await prisma.userDocuments.findMany({
+      where: {
+        userId: req.user.id
+      },
+      include: {
+        document: true,
+      },
+      orderBy: {
+        viewAt: 'desc'
+      },
+    })
+
+    res.status(200).json(docs)
+  } catch (error) {
+    next(error)
   }
 }
 

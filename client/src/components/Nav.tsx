@@ -1,12 +1,36 @@
+import { Link, useLocation } from "react-router-dom"
 import { useUser } from "../context/user"
 
+
 export default function Nav() {
-  const { user } = useUser()
+  const { user, setUser } = useUser()
+  const location = useLocation();
+  
+
+
   return (
+    
     <div>
-      <h1>Dashboard</h1>
+      {location.pathname.includes('dashboard') ? 
+      <div>
+        <h1>Dashboard</h1>
       <p>Welcome to your dashboard</p>
       <p>Username: {user?.username}</p>
+      <button onClick={() => setUser(null)}>Log off</button>
+      </div>
+      : user ?
+      <div className="flex">
+        <h1>CCE</h1>
+        <p>Go to your dashboard</p>
+        <button><Link to='/dashboard'>Dashboard</Link></button>
+      </div>
+       : <div>
+        <h1>CCE</h1>
+        <button><Link to='/sign-in'>Sign In</Link></button>
+        <button><Link to='/sign-up'>Sign Up</Link></button>
+       </div>
+      }
+      
     </div>
   )
 }

@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       {
         path: "edit/:docId",
         Component: Editor,
-      }
+      },
     ],
   },
 ]);

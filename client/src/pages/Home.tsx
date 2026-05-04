@@ -1,8 +1,10 @@
-function Home() {
+import Nav from "../components/Nav"
 
+function Home() {
+  
   return (
     <>
-      <h1>Hello World</h1>
+      <Nav />
     </>
   )
 }

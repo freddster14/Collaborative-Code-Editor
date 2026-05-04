@@ -12,6 +12,7 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true)
     try {
       const res = await postRequest("/sign-in", { identifier, password });
       setUser(res);
@@ -33,7 +34,7 @@ export default function SignIn() {
       <form onSubmit={handleSubmit}>
         <input type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit" disabled={isSubmitting} onClick={() => setIsSubmitting(prev => !prev)}>{isSubmitting? "Signing in..." : "Sign In"}</button>
+        <button type="submit"  disabled={isSubmitting}>{isSubmitting? "Signing in..." : "Sign In"}</button>
       </form>
     </div>
   );
