@@ -19,6 +19,7 @@ model User {
   hashedPass  String
   createdAt   DateTime  @default(now())
   documents   UserDocuments[]
+  folders     Folder[]
 }
 
 model Document {
@@ -32,12 +33,15 @@ model Document {
 }
 
 model Folder {
-  id        Int   @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
+  userId    Int   
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   parentId  Int?
+  parent    Folder?     @relation("Folders", fields: [parentId], references: [id], onDelete: Cascade)
   name      String
-  createdAt DateTime  @default(now())
+  createdAt DateTime    @default(now())
   documents Document[]
-
+  folders   Folder[]    @relation("Folders")
 }
 
 enum Role {
@@ -56,7 +60,7 @@ model UserDocuments {
   role        Role        @default(VIEW)
   createdAt   DateTime    @default(now())
   views       Int         @default(0)
-  viewAt      DateTime    @updatedAt
+  viewAt      DateTime    @default(now())
   
   @@unique([userId, documentId]) // Prevent duplicate entries
   @@index([userId]) // Fast lookup for users' documents

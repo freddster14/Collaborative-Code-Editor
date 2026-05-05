@@ -47,7 +47,8 @@ const server = new Server({
         documentId: context.id
       }},
       data: {
-        views: { increment: 1 }
+        views: { increment: 1 },
+        viewAt: new Date()
       }
     });
     return ydoc

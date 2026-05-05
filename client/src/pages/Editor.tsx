@@ -32,7 +32,6 @@ export default function Binding() {
     getToken();
   }, [])
 
-
   // lifetime for ydoc and provider
   useEffect(() => {
     if (!token) return;
