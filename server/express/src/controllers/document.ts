@@ -3,7 +3,6 @@ import { prisma } from "../../../prisma/client.ts";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { PRIVILED_ROLES } from "../utils/constants.ts";
-import document from "../routes/document.ts";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId = Number(req.params.folderId);

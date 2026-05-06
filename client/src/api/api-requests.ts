@@ -1,6 +1,5 @@
 const API_URL = import.meta.env.MODE === "production" ? '/api' : 'http://localhost:3000';
 
-
 export const getRequest = async (url: string) => {
   try {
     const res = await fetch(`${API_URL}${url}`, {
