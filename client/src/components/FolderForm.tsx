@@ -11,7 +11,7 @@ export default function FolderForm({ parentId, handleClose }: { parentId: number
     e.preventDefault();
     try {
       const res = await postRequest("/folder", { name, parentId });
-      navigate(`/folder/${res.id}`)
+      navigate(`folder/${res.id}`)
     } catch (err) {
       console.error(err);
     } finally {

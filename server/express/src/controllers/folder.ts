@@ -62,7 +62,6 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
     if (parentId) queryArgs.data.parentId = Number(parentId);
 
     const folder = await prisma.folder.create(queryArgs)
-
     res.status(201).json(folder)
   } catch (error) {
     next(error);

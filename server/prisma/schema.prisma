@@ -46,7 +46,6 @@ model Folder {
 
 enum Role {
   OWNER
-  CO_OWNER
   ADMIN
   EDIT
   VIEW
