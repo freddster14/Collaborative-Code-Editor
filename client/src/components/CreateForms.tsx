@@ -7,10 +7,11 @@ export default function CreateForms() {
   const folderId = Number(useParams().folderId);
   const [viewDoc, setViewDoc] = useState(false);
   const [viewFolder, setViewFolder] = useState(false);
+  const dashboardPage = Number.isNaN(folderId)
 
   return (
     <div>
-      {!Number.isNaN(folderId) && 
+      {!dashboardPage && 
       <div>
         { !viewDoc
           ? <button onClick={() => setViewDoc(true)}>Create Document</button>
@@ -18,14 +19,14 @@ export default function CreateForms() {
         }
       </div>  
       }
-      {Number.isNaN(folderId) && 
+     
       <div>
         { !viewFolder
-          ? <button onClick={() => setViewFolder(true)}>Create Folder</button>
+          ? <button onClick={() => setViewFolder(true)}>{dashboardPage ? "Create Project" :"Create Folder"}</button>
           : viewFolder && <FolderForm parentId={folderId} handleClose={() => setViewFolder(false)}/>
         }
       </div>  
-      }
+      
     </div>
   )
 }

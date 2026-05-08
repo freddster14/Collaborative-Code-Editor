@@ -11,6 +11,16 @@ export const getFolder = async (req: Request, res: Response, next: NextFunction)
         userId: req.user.id
        },
       include: {
+        folders: {
+          select: {
+            id: true,
+            name: true,
+            userId: true,
+          },
+          orderBy: {
+            name: 'asc'
+          }
+        },
         documents: {
           select: {
             id: true,
@@ -24,10 +34,8 @@ export const getFolder = async (req: Request, res: Response, next: NextFunction)
     });
 
     if (!folder) return res.status(404).send("Folder not found");
-
-    const childFolders = await prisma.folder.findMany({ where: { parentId: folder.id } });
     
-    res.status(200).json({ folder, childFolders })
+    res.status(200).json(folder)
   } catch (error) {
     next(error);
   }
@@ -42,13 +50,13 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
       },
     });
 
-    res.status(200).json({projects})
+    res.status(200).json(projects)
   } catch (error) {
     next(error);
   }
 }
 
-//validate
+// add: validate name
 export const createFolder = async (req: Request<{}, {}, {name:string, parentId:string}>, res: Response, next: NextFunction) => {
   const { name, parentId } = req.body;
   try {
@@ -67,10 +75,10 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
     next(error);
   }
 }
-// validate
-export const updateFolder = async (req: Request, res: Response, next: NextFunction) => {
-  const folderId: number = Number(req.params.folderId);
-  const name:string = req.body.name;
+// add: validate name
+export const updateFolder = async (req: Request<{folderId:string}, {}, {name:string}>, res: Response, next: NextFunction) => {
+  const folderId = Number(req.params.folderId);
+  const name = req.body.name;
 
   try {
     const folder:number = await prisma.folder.count({
@@ -87,7 +95,7 @@ export const updateFolder = async (req: Request, res: Response, next: NextFuncti
         name
       }
     })
-    res.status(200)
+    res.status(200).send("Updated")
   } catch (error) {
     next(error)
   }
@@ -109,6 +117,8 @@ export const deleteFolder = async (req: Request, res: Response, next: NextFuncti
         id: folderId
       }
     })
+
+    res.status(200).send("Deleted")
   } catch (error) {
     next(error)
   }
