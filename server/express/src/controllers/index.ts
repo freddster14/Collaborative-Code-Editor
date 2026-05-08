@@ -3,7 +3,10 @@ import bcrypt from "bcrypt";
 import { prisma } from "../../../prisma/client.ts";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
+import type { User } from "../../../generated/prisma/client.ts";
 
+// add: validate all inputs
+// add: create & add types to Request
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, confirm, username } = req.body;
   try {
@@ -28,19 +31,17 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       sameSite: "strict",
       maxAge: 1000 * 60 * 60 * 24 * 5 // 5 days
     })
-
     return res.status(201).json({ id: user.id, username: user.username })
-    
   } catch (error) {
     next(error);
   }
-
 }
 
-export const signInUser = async (req: Request, res: Response, next: NextFunction) => {
+// add: validate all inputs
+export const signInUser = async (req: Request<{}, {}, {identifier:string, password:string}>, res: Response, next: NextFunction) => {
   const { identifier, password } = req.body;
   try {
-    let user;
+    let user:User | null;
     if(identifier.includes('@')) {
       user = await prisma.user.findUnique({ where: { email: identifier }})
     } else {
@@ -75,4 +76,3 @@ export const signInUser = async (req: Request, res: Response, next: NextFunction
 export const getUser = async (req: Request, res:Response, next: NextFunction) => {
   res.status(200).json(req.user)
 }
-

@@ -25,8 +25,8 @@ export function authenticateUser(req: Request, res: Response, next: NextFunction
         requireEnv("SECRET"),
         { expiresIn: "5d" }
       )
-      // NEED TO DO: STORE JWT ID TO REDIS - BLACKLIST
-      await redis.set(`${payload.jti}`, "listed", { EX: timeLeft})
+      // add previous token jti to blacklist
+      await redis.set(`${payload.jti}`, "listed", { EX: timeLeft })
 
       res.cookie("token", newToken, {
         httpOnly: true,
