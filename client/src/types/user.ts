@@ -9,9 +9,3 @@ export interface User {
   email: string;
   createdAt: Date;
 }
-
-export interface UserContextType {
-  user: UserToken | null;
-  loading: boolean;
-  setUser: (user: UserToken | null) => void;
-}

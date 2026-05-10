@@ -1,12 +1,12 @@
-import { Link, useLocation } from "react-router-dom"
-import { useUser } from "../context/user"
+import { Link, useLocation, useRouteLoaderData } from "react-router-dom"
 
 
 export default function Nav() {
-  const { user, setUser } = useUser()
   const location = useLocation();
-  
+  const user = useRouteLoaderData('user');
+  const handleLogout = () => {
 
+  }
 
   return (
     
@@ -16,7 +16,7 @@ export default function Nav() {
         <h1>Dashboard</h1>
       <p>Welcome to your dashboard</p>
       <p>Username: {user?.username}</p>
-      <button onClick={() => setUser(null)}>Log off</button>
+      <button onClick={handleLogout}>Log off</button>
       </div>
       : user ?
       <div className="flex">

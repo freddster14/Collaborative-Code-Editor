@@ -10,7 +10,7 @@ await redis.connect()
 
 const server = new Server({
   name: 'hocuspocus-cce-01',
-  port: 1234,
+  port: 1235,
   debounce: 1000 * 60 * 3,
   maxDebounce: 1000 * 60 * 15,
   async connected(data) {

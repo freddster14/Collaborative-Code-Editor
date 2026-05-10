@@ -3,13 +3,12 @@ import { MonacoBinding } from 'y-monaco';
 import { Editor } from '@monaco-editor/react';
 import { useEffect, useMemo, useState } from 'react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useUser } from '../context/user';
+import { useNavigate, useParams, useRouteLoaderData } from 'react-router-dom';
 import { getRequest } from '../api/api-requests';
 import generateDarkColor from '../utils/generateColor';
 
 export default function Binding() {
-  const { user } = useUser();
+  const user = useRouteLoaderData('user');
   const ydoc = useMemo(() => new Y.Doc(), [])
   const [token, setToken] = useState(null)
   const [editor , setEditor] = useState(null);
@@ -36,7 +35,7 @@ export default function Binding() {
   useEffect(() => {
     if (!token) return;
     const provider = new HocuspocusProvider({
-      url: 'ws://127.0.0.1:1234',
+      url: 'ws://127.0.0.1:1235',
       name: `document-${docId}`,
       document: ydoc,
       onAuthenticationFailed: () => {

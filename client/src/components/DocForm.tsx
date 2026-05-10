@@ -11,7 +11,6 @@ export default function DocForm({ folderId, handleClose }: { folderId: number, h
     e.preventDefault();
     setIsSubmitting(true)
     try {
-      console.log("ran")
       const res = await postRequest(`/document/${folderId}`, { name });
       navigate(`/dashboard/edit/${res.id}`)
     } catch (err) {

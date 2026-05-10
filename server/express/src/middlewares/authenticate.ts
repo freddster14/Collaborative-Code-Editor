@@ -6,8 +6,7 @@ import redis from "../../redis.ts";
 
 export function authenticateUser(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies.token || null;
-
-  if(!token) return res.status(401).send("No token provided");
+  if(!token) return res.status(400).send("No token provided");
 
   jwt.verify(token, requireEnv("SECRET"), async (err: VerifyErrors | null, decoded: string | Jwt | JwtPayload | undefined) => {
     if(err) return next(err);

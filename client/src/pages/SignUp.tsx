@@ -1,24 +1,23 @@
 import { useState } from "react";
 import { postRequest } from "../api/api-requests";
-import { useUser } from "../context/user";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 
 export default function SignIn() {
+  const user = useRouteLoaderData('user')
+  if (user) return <Navigate to='/dashboard'/>
+
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const { setUser } = useUser();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true)
     try {
-      const res = await postRequest("/sign-up", { email, password, confirm, username });
-      setUser(res);
+      await postRequest("/sign-up", { email, password, confirm, username });
       navigate("/dashboard");
     } catch (err) {
       console.error(err);

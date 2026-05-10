@@ -10,7 +10,7 @@ export const getRequest = async (url: string) => {
       },
     });
     if(!res.ok) throw new Error("Get request Error")
-      return await res.json()
+    return await res.json()
   } catch (error) {
     throw(error)
   }
