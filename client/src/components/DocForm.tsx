@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { postRequest } from "../api/api-requests";
-import { useNavigate } from "react-router-dom";
+import { bodyRequest } from "../api/api-requests";
+import { useNavigate, useRevalidator } from "react-router-dom";
 
 export default function DocForm({ folderId, handleClose }: { folderId: number, handleClose: () => void}) {
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const navigate = useNavigate();
+  const revalidator = useRevalidator();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true)
     try {
-      const res = await postRequest(`/document/${folderId}`, { name });
-      navigate(`/dashboard/edit/${res.id}`)
+      await bodyRequest(`/document/${folderId}`, { name }, "POST");
+      revalidator.revalidate()
     } catch (err) {
       console.error(err);
     } finally {

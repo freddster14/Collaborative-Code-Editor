@@ -76,18 +76,16 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
   }
 }
 // add: validate name
-export const updateFolder = async (req: Request<{folderId:string}, {}, {name:string}>, res: Response, next: NextFunction) => {
-  const folderId = Number(req.params.folderId);
+export const updateFolder = async (req: Request<{id:string}, {}, {name:string}>, res: Response, next: NextFunction) => {
+  const folderId = Number(req.params.id);
   const name = req.body.name;
-
   try {
     const folder:number = await prisma.folder.count({
        where: { id: folderId, userId: req.user.id }
     });
 
     if (folder === 0) return res.status(404).send("Folder not found");
-
-    await prisma.folder.update({
+    const newFolder = await prisma.folder.update({
       where: {
         id: folderId
       },
@@ -95,14 +93,14 @@ export const updateFolder = async (req: Request<{folderId:string}, {}, {name:str
         name
       }
     })
-    res.status(200).send("Updated")
+    res.status(200).json(newFolder)
   } catch (error) {
     next(error)
   }
 }
 
-export const deleteFolder = async (req: Request, res: Response, next: NextFunction) => {
-  const folderId: number = Number(req.params.folderId)
+export const deleteFolder = async (req: Request<{id:string}>, res: Response, next: NextFunction) => {
+  const folderId: number = Number(req.params.id)
   try {
     const access = await prisma.folder.count({
       where: {
@@ -118,7 +116,7 @@ export const deleteFolder = async (req: Request, res: Response, next: NextFuncti
       }
     })
 
-    res.status(200).send("Deleted")
+    res.status(204).send("deleted")
   } catch (error) {
     next(error)
   }

@@ -1,9 +1,10 @@
-import { Link, useLocation, useRouteLoaderData } from "react-router-dom"
+import { Link, useLocation, useNavigate, useRouteLoaderData } from "react-router-dom"
 
 
 export default function Nav() {
   const location = useLocation();
   const user = useRouteLoaderData('user');
+  const navigate = useNavigate();
   const handleLogout = () => {
 
   }
@@ -13,7 +14,7 @@ export default function Nav() {
     <div>
       {location.pathname.includes('dashboard') ? 
       <div>
-        <h1>Dashboard</h1>
+        <h1 onClick={() => navigate('/dashboard')}>Dashboard</h1>
       <p>Welcome to your dashboard</p>
       <p>Username: {user?.username}</p>
       <button onClick={handleLogout}>Log off</button>

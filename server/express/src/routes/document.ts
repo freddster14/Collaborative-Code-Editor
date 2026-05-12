@@ -10,9 +10,9 @@ document.get('/:docId', authenticateUser, generateWebsocketToken)
 document.post("/:folderId", authenticateUser, createDoc)
 document.post('/permission/:docId', authenticateUser, grantAccess)
 
-document.put("/docId", authenticateUser, transferOwnership)
+document.put("/transfer/:docId", authenticateUser, transferOwnership)
 document.put('/:docId', authenticateUser, updateDoc)
-document.put('/:docId', authenticateUser, editRoles);
+document.put('/roles/:docId', authenticateUser, editRoles);
 
 document.delete("/:docId", authenticateUser, deleteDocument)
 

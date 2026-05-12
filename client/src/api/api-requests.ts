@@ -17,10 +17,10 @@ export const getRequest = async (url: string) => {
  
 }; 
 
-export const postRequest = async (url: string, data: any) => {
+export const bodyRequest = async (url: string, data: any, method: string) => {
   try {
     const res = await fetch(`${API_URL}${url}`, {
-      method: "POST",
+      method,
       body: JSON.stringify(data),
       credentials: 'include',
       headers: {
@@ -28,7 +28,8 @@ export const postRequest = async (url: string, data: any) => {
       },
     });
     if(!res.ok) throw new Error("Post request Error")
-    return await res.json()
+    if(res.status === 204) return res;
+    return await res.json();
   } catch (error) {
     throw(error)
   }

@@ -138,7 +138,7 @@ export const updateDoc = async (req: Request<{docId:string}, {}, {name:string}>,
       }
     })
 
-    res.status(200).json(newDoc);
+    res.status(204);
   } catch (error) {
     next(error);
   }
@@ -203,17 +203,17 @@ export const grantAccess = async (req: Request<{id:string},{},{usersId:number[],
       data
     });
 
-    res.status(201);
+    res.status(204);
   } catch (error) {
     next(error)
   }
 }
 
 
-export const editRoles = async (req: Request<{id:number}, {}, {usersId:number[], roles: Role[]}>, res: Response, next: NextFunction) => {
+export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number[], roles: Role[]}>, res: Response, next: NextFunction) => {
   const usersId = req.body.usersId
   const roles = req.body.roles
-  const docId = Number(req.params.id)
+  const docId = Number(req.params.docId)
 
   try {
     if(usersId.length === 0) return res.status(400).send("Nothing to update")
@@ -282,7 +282,7 @@ export const editRoles = async (req: Request<{id:number}, {}, {usersId:number[],
         })
       }
     });
-    res.status(201)
+    res.status(204)
   } catch (error) {
     next(error)
   }
@@ -329,14 +329,14 @@ export const removeAccess = async (req:Request<{docId:string, userId:string}>, r
         }
       }
     })
-    res.status(200)
+    res.status(204)
   } catch (error) {
     next(error)
   }
 }
 
 export const deleteDocument = async (req: Request, res: Response, next: NextFunction) => {
-  const docId = Number(req.body.docId)
+  const docId = Number(req.params.docId)
   try {
      // verify user is owner
      const user = await prisma.userDocuments.findUnique({
@@ -354,7 +354,7 @@ export const deleteDocument = async (req: Request, res: Response, next: NextFunc
         id: docId
       }
     });
-    res.status(200).send("Deleted Document")
+    res.status(204).send("deleted")
   } catch (error) {
     next(error)
   }

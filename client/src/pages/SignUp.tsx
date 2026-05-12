@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { postRequest } from "../api/api-requests";
+import { bodyRequest } from "../api/api-requests";
 import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 
 export default function SignIn() {
@@ -17,7 +17,7 @@ export default function SignIn() {
     e.preventDefault();
     setIsSubmitting(true)
     try {
-      await postRequest("/sign-up", { email, password, confirm, username });
+      await bodyRequest("/sign-up", { email, password, confirm, username }, "POST");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
