@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
-import { useNavigate, useRevalidator } from "react-router-dom";
+import { useRevalidator } from "react-router-dom";
 
 export default function DocForm({ folderId, handleClose }: { folderId: number, handleClose: () => void}) {
   const [name, setName] = useState('');

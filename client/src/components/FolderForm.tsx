@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
-import { useNavigate, useRevalidator } from "react-router-dom";
+import { useRevalidator } from "react-router-dom";
 
 export default function FolderForm({ parentId, handleClose }: { parentId: number, handleClose: () => void}) {
   const [name, setName] = useState('');

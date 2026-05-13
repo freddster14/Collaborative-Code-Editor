@@ -48,6 +48,9 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
         parentId: null,
         userId: req.user.id
       },
+      orderBy: {
+        name: 'asc'
+      }
     });
 
     res.status(200).json(projects)

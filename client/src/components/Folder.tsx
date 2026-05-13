@@ -1,6 +1,8 @@
 import { useLoaderData, useNavigate, useParams, useRevalidator } from "react-router-dom";
 import { bodyRequest } from "../api/api-requests";
 import { useState } from "react";
+import Roles from "./Roles";
+import EditForm from "./EditForm";
 
 export default function FolderData() {
   const data = useLoaderData();
@@ -9,9 +11,10 @@ export default function FolderData() {
   const [options , setOptions] = useState<string>('')
   const [input, setInput] = useState('');
   const [viewEdit, setViewEdit] = useState(false);
+  const [viewRoles, setViewRoles] = useState(false);
   const [type, setType] = useState<string | null>(null);
   const [id, setId] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const revalidator = useRevalidator();
 
   const handleDelete = async (id:number, route:string) => {
@@ -26,10 +29,17 @@ export default function FolderData() {
     }
   }
   const openEdit = (id:number, name:string, type:string) => {
+    setViewRoles(false)
     setId(id)
     setInput(name)
     setViewEdit(true)
     setType(type)
+  }
+
+  const openRoles = (id:number) => {
+    setViewEdit(false)
+    setId(id)
+    setViewRoles(true);
   }
 
   if (data === null) return <div>Loading...</div>
@@ -40,8 +50,15 @@ export default function FolderData() {
         <h1>Projects</h1>
         {data.map(f => (
         <div key={f.id}>
-          <p>Folder</p>
+          <p>Project</p>
           <p onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
+          <button onClick={() => setOptions(`${f.id}-f`)}>Options</button>
+          { options === `${f.id}-f` &&
+            <div>
+              <button onClick={() => openEdit(f.id, f.name, 'folder')}>Edit</button>
+              <button onClick={() => handleDelete(f.id, 'folder')} disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button>
+            </div>
+            }
         </div>
       ))}
       </div> 
@@ -66,41 +83,16 @@ export default function FolderData() {
             { options === `${e.id}-d` &&
               <div>
                 <button onClick={() => openEdit(e.id, e.name, 'document')}>Edit</button>
+                <button onClick={() => openRoles(e.id)}>Roles</button>
                 <button onClick={() => handleDelete(e.id, 'document')}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button>
               </div>
             }
           </div>
         ))}
-      </div>
-      
+        </div>
       }
-      { viewEdit && <EditForm id={id} value={input} type={type} viewEdit={setViewEdit}/> }
+      { viewRoles && <Roles key={id} id={id} viewRoles={setViewEdit}/>}
+      { viewEdit && <EditForm key={id} id={id} value={input} type={type} viewEdit={setViewEdit}/> }
     </div>
-  )
-}
-
-function EditForm({ id, value, type, viewEdit }: { id:number, value:string, type:string, viewEdit: (boolean) => void}) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [input, setInput] = useState(value)
-  const revalidator = useRevalidator();
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await bodyRequest(`/${type}/${id}`, { name: input }, "PUT");
-      revalidator.revalidate()
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsSubmitting(false);
-      viewEdit(false)
-    }
-  }
-  return (
-    <form onSubmit={handleEdit}>
-      <p>Edit</p>
-      <input type="text" placeholder="name" value={input} onChange={(e) => setInput(e.target.value)} />
-      <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Editing..." : "Edit"}</button>
-    </form>
   )
 }
