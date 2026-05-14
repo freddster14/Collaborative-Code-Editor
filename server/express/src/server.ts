@@ -6,6 +6,7 @@ import index from './routes/index.js';
 import redis from '../redis.ts';
 import document from './routes/document.ts';
 import folder from './routes/folder.ts';
+import user from './routes/user.ts';
 
 const app = express();
 app.use(cookieParser());
@@ -20,8 +21,9 @@ await redis.connect();
 const PORT = process.env.PORT || 3000;
 
 app.use('/', index);
-app.use('/document', document)
-app.use('/folder', folder)
+app.use('/document', document);
+app.use('/folder', folder);
+app.use('/user', user)
 app.use(errorHandling);
 
 redis.on('error', err => console.log('Redis Client Error', err));

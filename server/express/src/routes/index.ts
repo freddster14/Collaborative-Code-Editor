@@ -1,12 +1,11 @@
 import { Router } from "express";
-import { createUser, getUser, signInUser } from "../controllers/index.js";
+import { createUser, logoff, signInUser } from "../controllers/index.js";
 import { authenticateUser } from "../middlewares/authenticate.ts";
 
 const index = Router()
 
-index.post('/sign-up', createUser)
-index.post('/sign-in', signInUser)
-index.get('/user', authenticateUser, getUser)
-
+index.post('/sign-up', createUser);
+index.post('/sign-in', signInUser);
+index.post('/logout', authenticateUser, logoff)
 
 export default index

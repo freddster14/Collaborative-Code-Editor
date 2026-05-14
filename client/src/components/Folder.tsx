@@ -42,13 +42,13 @@ export default function FolderData() {
     setViewRoles(true);
   }
 
-  if (data === null) return <div>Loading...</div>
+  if (!data) return <div>Loading...</div>
   return (
     <div>
       {Number.isNaN(folderId)
       ? <div>
         <h1>Projects</h1>
-        {data.map(f => (
+        {data.length > 0 ? data.map(f => (
         <div key={f.id}>
           <p>Project</p>
           <p onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
@@ -60,7 +60,9 @@ export default function FolderData() {
             </div>
             }
         </div>
-      ))}
+      ))
+      : <div>No projects start a new one</div>
+      }
       </div> 
       : <div>
         <h1>Folder: {data.name}</h1>
@@ -91,7 +93,7 @@ export default function FolderData() {
         ))}
         </div>
       }
-      { viewRoles && <Roles key={id} id={id} viewRoles={setViewEdit}/>}
+      { viewRoles && <Roles key={id} id={id} viewRoles={setViewRoles} userRole={"OWNER"}/>}
       { viewEdit && <EditForm key={id} id={id} value={input} type={type} viewEdit={setViewEdit}/> }
     </div>
   )

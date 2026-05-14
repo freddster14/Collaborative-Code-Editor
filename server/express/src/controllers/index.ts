@@ -73,6 +73,16 @@ export const signInUser = async (req: Request<{}, {}, {identifier:string, passwo
   }
 }
 
-export const getUser = async (req: Request, res:Response, next: NextFunction) => {
-  res.status(200).json(req.user)
+export const logoff = async (req:Request, res:Response, next:NextFunction) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({ msg: "Logged Off"})
+  } catch (error) {
+    next(error)
+  }
 }

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.ts";
 import type { Role } from "../../../generated/prisma/enums.ts";
+import user from "../routes/user.ts";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);
@@ -138,18 +139,58 @@ export const updateDoc = async (req: Request<{docId:string}, {}, {name:string}>,
       }
     })
 
-    res.status(204);
+    res.status(200).json(newDoc);
   } catch (error) {
     next(error);
   }
 }
 
 
-export const grantAccess = async (req: Request<{id:string},{},{usersId:number[], roles:Role[]}>, res: Response, next: NextFunction) => {
-  const usersId = req.body.usersId
-  const roles = req.body.roles
-  const docId:number = Number(req.params.id)
+export const getRoles = async (req:Request<{docId:string}>, res:Response, next:NextFunction) => {
+  const docId:number = Number(req.params.docId);
+  try {
+    const user = await prisma.userDocuments.findUnique({
+      where: {
+        userId_documentId: {
+          userId: req.user.id,
+          documentId: docId
+        }
+      },
+      select: {
+        role: true
+      }
+    });
 
+    if(!user) return res.status(404).send("Document not found");
+    if (!PRIVILED_ROLES.includes(user.role)) return res.status(400).send("Unable to view roles");
+    const roles: Role[] = PRIVILED_ROLES.slice(0, PRIVILED_ROLES.indexOf(user.role) + 1)
+    const userRoles = await prisma.userDocuments.findMany({
+      where: {
+        documentId: docId,
+        role: { notIn: roles }
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+          }
+        }
+      }
+    });
+
+    res.status(200).json(userRoles)
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export const grantAccess = async (req: Request<{docId:string},{},{usersId:number[], roles:Role[]}>, res: Response, next: NextFunction) => {
+  const usersId = req.body.usersId;
+  const roles = req.body.roles;
+  const docId:number = Number(req.params.docId);
+  console.log(usersId, roles)
   try {
     // verify document
     const doc:number = await prisma.document.count({
@@ -203,7 +244,7 @@ export const grantAccess = async (req: Request<{id:string},{},{usersId:number[],
       data
     });
 
-    res.status(204);
+    res.status(200).json({msg: "Granted"});
   } catch (error) {
     next(error)
   }
@@ -288,48 +329,61 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
   }
 }
 
-export const removeAccess = async (req:Request<{docId:string, userId:string}>, res:Response, next:NextFunction) => {
+export const removeAccess = async (req:Request<{docId:string, id:string}>, res:Response, next:NextFunction) => {
   const docId = Number(req.params.docId);
-  const userId = Number(req.params.userId);
-
+  const id = Number(req.params.id);
   try {
     // validate user and user that will be removed
     const users = await prisma.userDocuments.findMany({
       where: {
-          userId: { in: [req.user.id, userId]},
-          documentId: docId
+          OR: [
+            {
+              userId: req.user.id,
+              documentId: docId
+            },
+            { id }
+          ]
+       
         },
         select: {
+          id: true,
           userId: true,
           role: true
         }
     });
+    const userMarked = users.find(u => u.id === id)
     const usersRoles = new Map();
     for(const u of users) {
       usersRoles.set(u.userId, u.role)
     };
+    console.log(usersRoles)
+    console.log(userMarked)
     if (!usersRoles.has(req.user.id)) return res.status(404).send("Document not found");
-    if (!usersRoles.has(userId)) return res.status(404).send("User not found");
+    if ( !userMarked || !usersRoles.has(userMarked.userId)) return res.status(404).send("User not found");
     
     // validate role hierchy
-    if(req.user.id !== userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) >= AVAILABLE_ROLES.indexOf(usersRoles.get(userId))) {
+    if(req.user.id !== userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) >= AVAILABLE_ROLES.indexOf(usersRoles.get(userMarked.userId))) {
+      console.log(1)
       return res.status(400).send("Can not remove access to this user")
-    } else if (AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) === 0) {
+    } else if ( req.user.id === userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) === 0) {
+      console.log(2)
+
       return res.status(400).send("Must transer document ownership or delete")
-    } else if (!PRIVILED_ROLES.includes(usersRoles.get(req.user.id)) && req.user.id !== userId) {
+    } else if (!PRIVILED_ROLES.includes(usersRoles.get(req.user.id)) && req.user.id !== userMarked.userId) {
+      console.log(3)
       return res.status(400).send("You can not remove access")
     }
-
+    console.log(userMarked.id, docId)
     // remove user
     await prisma.userDocuments.delete({
       where: {
         userId_documentId: {
-          userId,
+          userId: userMarked.userId,
           documentId: docId
         }
       }
     })
-    res.status(204)
+    res.status(200).json({ msg: "removed" })
   } catch (error) {
     next(error)
   }
