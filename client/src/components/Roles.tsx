@@ -95,10 +95,7 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
       newData.set(id, { username: u.username, role: e.target.value})
       return newData
     })
-    console.log(e.target.value);
-    console.log(id)
   }
-  console.log(selectedUsers)
   if(!data) return <div>Loading...</div>
   return(
     <div>

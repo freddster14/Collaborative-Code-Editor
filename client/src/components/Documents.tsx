@@ -19,7 +19,6 @@ export default function Documents() {
     }
     getDocuments()
   }, [])
-  console.log(documents)
   if(loading) return <div>Loading...</div>
   return(
     <div>
