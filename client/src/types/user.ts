@@ -9,3 +9,9 @@ export interface User {
   email: string;
   createdAt: Date;
 }
+
+export interface UserRole {
+  userId: number,
+  username: string,
+  role: string
+}

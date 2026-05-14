@@ -190,7 +190,6 @@ export const grantAccess = async (req: Request<{docId:string},{},{usersId:number
   const usersId = req.body.usersId;
   const roles = req.body.roles;
   const docId:number = Number(req.params.docId);
-  console.log(usersId, roles)
   try {
     // verify document
     const doc:number = await prisma.document.count({
@@ -255,7 +254,6 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
   const usersId = req.body.usersId
   const roles = req.body.roles
   const docId = Number(req.params.docId)
-
   try {
     if(usersId.length === 0) return res.status(400).send("Nothing to update")
 
@@ -323,7 +321,7 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
         })
       }
     });
-    res.status(204)
+    res.status(200).json({ msg: "Updated" })
   } catch (error) {
     next(error)
   }
@@ -356,24 +354,17 @@ export const removeAccess = async (req:Request<{docId:string, id:string}>, res:R
     for(const u of users) {
       usersRoles.set(u.userId, u.role)
     };
-    console.log(usersRoles)
-    console.log(userMarked)
     if (!usersRoles.has(req.user.id)) return res.status(404).send("Document not found");
     if ( !userMarked || !usersRoles.has(userMarked.userId)) return res.status(404).send("User not found");
     
     // validate role hierchy
     if(req.user.id !== userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) >= AVAILABLE_ROLES.indexOf(usersRoles.get(userMarked.userId))) {
-      console.log(1)
       return res.status(400).send("Can not remove access to this user")
     } else if ( req.user.id === userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) === 0) {
-      console.log(2)
-
       return res.status(400).send("Must transer document ownership or delete")
     } else if (!PRIVILED_ROLES.includes(usersRoles.get(req.user.id)) && req.user.id !== userMarked.userId) {
-      console.log(3)
       return res.status(400).send("You can not remove access")
     }
-    console.log(userMarked.id, docId)
     // remove user
     await prisma.userDocuments.delete({
       where: {

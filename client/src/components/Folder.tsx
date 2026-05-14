@@ -93,8 +93,8 @@ export default function FolderData() {
         ))}
         </div>
       }
-      { viewRoles && <Roles key={id} id={id} viewRoles={setViewRoles} userRole={"OWNER"}/>}
-      { viewEdit && <EditForm key={id} id={id} value={input} type={type} viewEdit={setViewEdit}/> }
+      { viewRoles && <Roles key={id} docId={id} viewRoles={setViewRoles} userRole={"OWNER"}/>}
+      { viewEdit && <EditForm key={id} docId={id} value={input} type={type} viewEdit={setViewEdit}/> }
     </div>
   )
 }

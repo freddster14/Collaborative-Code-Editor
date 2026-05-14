@@ -28,7 +28,7 @@ export const bodyRequest = async (url: string, data: any, method: string) => {
         "Content-Type": "application/json",
       },
     });
-    if(!res.ok) throw new ApiError("Get request Error", res.status)
+    if(!res.ok) throw new ApiError(`${method} request Error`, res.status)
     if(res.status === 204) return res;
     return await res.json();
   } catch (error) {

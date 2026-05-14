@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { bodyRequest, getRequest } from "../api/api-requests";
 import { AVAILABLE_ROLES } from "../utils/contants";
+import type { UserRole } from "../types/user";
 
-export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: (boolean) => void, userRole:string}) {
-  const [data, setData] = useState(null); // Change to Map object to scale on deletion
+export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (boolean) => void, userRole:string}) {
+  const [data, setData] = useState(null); // Change to Map object to scale on change and deletion
   const [addNew, setAddNew] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [input, setInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState(null); 
-  const [selectedUsers, setSelectedUsers] = useState(new Map())
+  const [selectedUsers, setSelectedUsers] = useState(new Map());
+  const [updatedUsers, setUpdatedUsers] = useState(new Map());
   const [viewSelected, setViewSelected] = useState(false);
   const [isRemoving, setIsRemoving] = useState(null);
   const roles = AVAILABLE_ROLES.slice(AVAILABLE_ROLES.indexOf(userRole) + 1);
 
+  // grab document roles
   useEffect(() => {
     async function getRoles() {
       try {
-        const res = await getRequest(`/document/roles/${id}`)
-        setData(res);
+        const res = await getRequest(`/document/roles/${docId}`)
+        const map: Map<number, UserRole> = new Map()
+        for(const r of res) {
+          map.set(r.id, { userId: r.userId, username: r.user.username, role: r.role})
+        }
+        setData(map);
       } catch (error) {
         console.error(error)
       }
@@ -29,7 +36,7 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
   const handleSearch = async () => {
     setIsSubmitting(true);
     try {
-      const res = await getRequest(`/user/search/${id}/?search=${input}`)
+      const res = await getRequest(`/user/search/${docId}/?search=${input}`)
       setSearchedUsers(res)
     } catch (error) {
       console.error(error)
@@ -50,11 +57,25 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
     })
   }
 
-  const handleSubmit = async (e: React.SyntheticEvent) => {
+  // changes selected users' roles
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, id:number, u:{username:string}) => {
+    setSelectedUsers(prev => {
+      const newData = new Map(prev);
+      newData.set(id, { username: u.username, role: e.target.value})
+      return newData
+    })
+  }
+
+  // submits new users to add
+  const handleSubmitNew = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      await bodyRequest(`/document/permission/${id}`, { usersId: [...selectedUsers.keys()], roles: Array.from(selectedUsers.values(), user => user.role)}, "POST")
+      const body = {
+        usersId: [...selectedUsers.keys()],
+        roles: Array.from(selectedUsers.values(), user => user.role)
+      };
+      await bodyRequest(`/document/permission/${docId}`, body, "POST")
       setAddNew(false);
       setViewSelected(false);
       setSearchedUsers(null);
@@ -66,37 +87,57 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
       setIsSubmitting(false)
     }
   }
+  // edits current users' roles
+  const handleEdit = (e:React.ChangeEvent<HTMLSelectElement>, id:number, u) => {
+      setUpdatedUsers(prev => {
+        const newData = new Map(prev);
+        if (data.get(id).role === e.target.value) {
+          newData.delete(u.userId)
+        } else {
+          newData.set(u.userId, { username: u.username, role: e.target.value})
+        }
+        return newData
+      })
+  };
 
-  const handleEdit = async () => {
+  const handleSubmitUpdate = async (e) => {
+    e.preventDefault()
+    setIsSubmitting(true)
     try {
-      
+      const body = {
+        usersId: [...updatedUsers.keys()],
+        roles: Array.from(updatedUsers.values(), user => user.role)
+      };
+      await bodyRequest(`/document/roles/${docId}`, body , "PUT")
+      setUpdatedUsers(new Map());
+      setRefresh(prev => prev + 1);
     } catch (error) {
       console.error(error)
+    } finally {
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleDelete = async (dataId:number) => {
     setIsRemoving(dataId)
+    const prev = data;
+    setData(prev => {
+      const newData = new Map(prev);
+      newData.delete(dataId);
+      return newData;
+    })
     try {
-      await bodyRequest(`/document/${id}/remove/${dataId}`, {}, "DELETE");
-      setData(prev => {
-        return prev.filter(p => p.id !== dataId)
-      })
+      await bodyRequest(`/document/${docId}/remove/${dataId}`, {}, "DELETE");
     } catch (error) {
+      setData(prev)
       console.error(error)
     } finally {
       setIsRemoving(null)
     }
   }
 
-  const handleChange = (e, id, u) => {
-    setSelectedUsers(prev => {
-      const newData = new Map(prev);
-      newData.set(id, { username: u.username, role: e.target.value})
-      return newData
-    })
-  }
   if(!data) return <div>Loading...</div>
+
   return(
     <div>
       {
@@ -125,7 +166,7 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
             </div>
           : <div>
               <button onClick={() => setViewSelected(false)}>Back</button>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmitNew}>
               <ul>
                 {Array.from(selectedUsers.entries()).map(([key, value]) => (
                   <li key={key}>
@@ -142,21 +183,29 @@ export default function Roles({id, viewRoles, userRole}: {id:number, viewRoles: 
               </form>
               
             </div> 
-        : data.length > 0
+        : data.size > 0
         ? <div>
             <button onClick={() => viewRoles(false)}>Close</button>
             <button onClick={() => setAddNew(true)}>ADD USERS</button>
-            <form onSubmit={handleEdit}>
-              {data.map(d => (
-                <div key={d.id}>
-                  <p>{d.user.username}</p>
-                  <p>{d.role}</p>
-                  <button onClick={() => handleDelete(d.id)} disabled={isRemoving === d.id}>{isRemoving === d.id ? "Removing..." :"Remove"}</button>
-                </div>
+            <form onSubmit={handleSubmitUpdate}>
+              <ul>
+              {Array.from(data.entries()).map(([key, value]) => (
+                <li key={key}>
+                  <p>{value.username}</p>
+                  <p>{value.role}</p>
+                  <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleEdit(e, key, value)}>
+                      {roles.map(r=> (
+                        <option value={r} key={r}>{r}</option>
+                      ))}  
+                  </select> 
+                  <button type="button" onClick={() => handleDelete(key)} disabled={isRemoving === key}>{isRemoving === key ? "Removing..." :"Remove"}</button>
+                </li>
               ))}
+              </ul>
+              {updatedUsers.size > 0 && <button type="submit" disabled={isSubmitting}>{ isSubmitting ? "Updating..." : "Update"}</button>}
             </form>
           </div> 
-          : <div>No user has access <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
+        : <div>No user has access <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
       }
     </div>
   )
