@@ -4,29 +4,50 @@ import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.ts";
 import type { Role } from "../../../generated/prisma/enums.ts";
-import user from "../routes/user.ts";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);
   const name:string = req.body.name;
   try {
     //name required for creation
-    if(name === "") return res.status(400).send("Document name required")
-    const doc = await prisma.document.create({
-      data: {
-        name,
-        folderId,
-      }
-    })
+    if(name === "") return res.status(400).send("Document name required");
 
-    await prisma.userDocuments.create({
-      data: {
-        documentId: doc.id,
-        userId: req.user.id,
-        role: "OWNER"
-      }
-    })
-    res.status(201).json(doc)
+    // verify folder exists
+    const folder: null | {documents: {name:string}[]} = await prisma.folder.findUnique({
+      where: {
+        id: folderId,
+        userId: req.user.id      
+      },
+      select: {
+        documents: {
+          where: { name },
+          select: { name:true}
+        },
+      },
+    });
+    if (!folder) return res.status(404).send("Folder not found");
+
+    // verify document name does not exist within folder
+    if (folder.documents.length > 0) return res.status(400).send("Name taken in folder")
+
+    const document = await prisma.$transaction(async (prisma) => {
+      const document = await prisma.document.create({
+        data: {
+          name,
+          folderId,
+        }
+      });
+      await prisma.userDocuments.create({
+        data: {
+          documentId: document.id,
+          userId: req.user.id,
+          role: "OWNER"
+        }
+      });
+      return document
+    })    
+
+    res.status(201).json(document)
   } catch (error) {
     next(error);
   }
@@ -118,22 +139,41 @@ export const updateDoc = async (req: Request<{docId:string}, {}, {name:string}>,
   const docId:number = Number(req.params.docId);
   const name  = req.body.name; 
   try {
-    const user: null | {role:Role} = await prisma.userDocuments.findUnique({
+    const document:{ folderId:number; users:{ role: Role }[] } | null = await prisma.document.findUnique({
       where: {
-        userId_documentId: {
-          userId: req.user.id,
-          documentId: docId,
-        }
+        id: docId,
+        users: {
+          some: {
+            userId: req.user.id
+          }
+        }      
       },
       select: {
-        role: true
-      }
+        folderId: true,
+        users: {
+          where: {
+          userId: req.user.id
+          },
+          select: {
+            role: true
+          }
+        }
+      },
     });
-    if (!user) return res.status(404).send("Document not found")
-    if(!PRIVILED_ROLES.includes(user.role)) return res.status(403).send("No able to edit document")
+    if (!document) return res.status(404).send("Document not found");
+    if( !document.users[0] || !PRIVILED_ROLES.includes(document.users[0].role)) return res.status(403).send("No able to edit document");
     
+    // verify document name does not exist within folder
+    const doc = await prisma.document.count({
+      where: {
+        name,
+        folderId: document.folderId
+      },
+    })
+    if (doc > 0) return res.status(404).send("Name taken");
+
     const newDoc = await prisma.document.update({
-      where: { id: docId},
+      where: { id: docId },
       data: {
         name,
       }

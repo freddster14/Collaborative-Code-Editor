@@ -30,6 +30,8 @@ model Document {
   folderId    Int
   users       UserDocuments[]
   createdAt   DateTime  @default(now())
+
+  @@unique([name, folderId]) // Unique document name in folder
 }
 
 model Folder {
@@ -42,6 +44,8 @@ model Folder {
   createdAt DateTime    @default(now())
   documents Document[]
   folders   Folder[]    @relation("Folders")
+
+  @@unique([name, parentId]) // Unique folder name in parent folder
 }
 
 enum Role {
