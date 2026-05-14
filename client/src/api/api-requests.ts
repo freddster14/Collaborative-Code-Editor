@@ -1,3 +1,5 @@
+import { ApiError } from "../types";
+
 const API_URL = import.meta.env.MODE === "production" ? '/api' : 'http://localhost:3000';
 
 export const getRequest = async (url: string) => {
@@ -9,12 +11,11 @@ export const getRequest = async (url: string) => {
         "Content-Type": "application/json",
       },
     });
-    if(!res.ok) throw new Error("Get request Error")
+    if(!res.ok) throw new ApiError("Get request Error", res.status)
     return await res.json()
   } catch (error) {
     throw(error)
   }
- 
 }; 
 
 export const bodyRequest = async (url: string, data: any, method: string) => {
@@ -27,10 +28,19 @@ export const bodyRequest = async (url: string, data: any, method: string) => {
         "Content-Type": "application/json",
       },
     });
-    if(!res.ok) throw new Error("Post request Error")
+    if(!res.ok) throw new ApiError("Get request Error", res.status)
     if(res.status === 204) return res;
     return await res.json();
   } catch (error) {
     throw(error)
   }
 };
+
+export const getUser = async (url:string) => {
+  try {
+    return await getRequest(url)
+
+  } catch (error) {
+    return null
+  }
+}

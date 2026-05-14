@@ -6,7 +6,7 @@ import Dashboard from "../pages/Dashboard.tsx";
 import Documents from "../components/Documents.tsx";
 import Editor from "../pages/Editor.tsx";
 import FolderData from "../components/Folder.tsx";
-import { getRequest } from "../api/api-requests.ts";
+import { getRequest, getUser } from "../api/api-requests.ts";
 import Intro from "../pages/Intro.tsx";
 
 const router = createBrowserRouter([
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     path: "/",
     Component: Home,
     id: 'user',
-    loader: async () =>  await getRequest("/user"),
+    loader: async () =>  await getUser("/user"),
     children: [
       {
         index: true,
@@ -37,12 +37,26 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            loader: async () =>  await getRequest("/folder"),
+            loader: async () => {
+              try {
+                return await getRequest("/folder");
+
+              } catch (error) {
+                console.log(error)
+              }
+            },
             Component: FolderData
           },
           {
             path: "folder/:folderId",
-            loader: async ({ params }) => await getRequest(`/folder/${params.folderId}`),
+            loader: async ({ params }) => {
+              try {
+                return await getRequest(`/folder/${params.folderId}`)
+
+              } catch (error) {
+                console.log(error)
+              }
+            },
             Component: FolderData
           },
           {
