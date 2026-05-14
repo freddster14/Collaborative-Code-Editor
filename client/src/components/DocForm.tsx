@@ -12,11 +12,12 @@ export default function DocForm({ folderId, handleClose }: { folderId: number, h
     setIsSubmitting(true)
     try {
       await bodyRequest(`/document/${folderId}`, { name }, "POST");
-      revalidator.revalidate()
+      setName('');
+      revalidator.revalidate();
     } catch (err) {
       console.error(err);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
   return (

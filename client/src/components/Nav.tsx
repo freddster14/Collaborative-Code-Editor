@@ -1,12 +1,18 @@
 import { Link, useLocation, useNavigate, useRouteLoaderData } from "react-router-dom"
+import { bodyRequest } from "../api/api-requests";
 
 
 export default function Nav() {
   const location = useLocation();
   const user = useRouteLoaderData('user');
   const navigate = useNavigate();
-  const handleLogout = () => {
-
+  const handleLogout = async () => {
+    try {
+      await bodyRequest('/logout', {}, "POST");
+      navigate('/sign-in')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

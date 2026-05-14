@@ -11,11 +11,12 @@ export default function FolderForm({ parentId, handleClose }: { parentId: number
     e.preventDefault();
     try {
       await bodyRequest("/folder", { name, parentId }, "POST");
+      setName('')
       revalidator.revalidate();
     } catch (err) {
       console.error(err);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
   return (
