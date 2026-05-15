@@ -13,9 +13,6 @@ const server = new Server({
   port: 1235,
   debounce: 1000 * 60 * 3,
   maxDebounce: 1000 * 60 * 15,
-  async connected(data) {
-    console.log("user connected")
-  },
   async onAuthenticate(data) {
     const { token, documentName } = data;
     const docId = Number(documentName.slice(9));
@@ -34,20 +31,20 @@ const server = new Server({
     if(cachedData) {
       const uint8Array = Buffer.from(cachedData, 'base64')
       Y.applyUpdate(ydoc, uint8Array)
-      return ydoc
+    } else {
+      const dbData = await prisma.document.findUnique({ where: { id: context.id }})
+      if(dbData?.doc) {
+        const uint8Array = Buffer.from(dbData.doc)
+        Y.applyUpdate(ydoc, uint8Array)
+      }
     }
-    const dbData = await prisma.document.findUnique({ where: { id: context.id }})
-    if(dbData?.doc) {
-      const uint8Array = Buffer.from(dbData.doc)
-      Y.applyUpdate(ydoc, uint8Array)
-    }
+   
     await prisma.userDocuments.update({
       where: { userId_documentId: {
         userId: context.userId,
         documentId: context.id
       }},
       data: {
-        views: { increment: 1 },
         viewAt: new Date()
       }
     });
