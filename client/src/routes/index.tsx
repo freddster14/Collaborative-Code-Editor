@@ -3,11 +3,12 @@ import Home from "../pages/Home.tsx";
 import SignUp from "../pages/SignUp.tsx";
 import SignIn from "../pages/SignIn.tsx";
 import Dashboard from "../pages/Dashboard.tsx";
-import Documents from "../components/Documents.tsx";
+import Documents from "../pages/RecentDocuments.tsx";
 import Editor from "../pages/Editor.tsx";
-import FolderData from "../components/Folder.tsx";
+import FolderData from "../pages/Folder.tsx";
 import { getRequest, getUser } from "../api/api-requests.ts";
 import Intro from "../pages/Intro.tsx";
+import RecentDocuments from "../pages/RecentDocuments.tsx";
 
 const router = createBrowserRouter([
   {
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
                 return await getRequest("/folder");
 
               } catch (error) {
-                console.log(error)
+                console.error(error)
               }
             },
             Component: FolderData
@@ -54,14 +55,21 @@ const router = createBrowserRouter([
                 return await getRequest(`/folder/${params.folderId}`)
 
               } catch (error) {
-                console.log(error)
+                console.error(error)
               }
             },
             Component: FolderData
           },
           {
             path: 'recent',
-            Component: Documents
+            loader: async () => {
+              try {
+                return await getRequest('/document')
+              } catch (error) {
+                console.error(error)
+              }
+            },
+            Component: RecentDocuments
           },
           {
             path: "edit/:docId",

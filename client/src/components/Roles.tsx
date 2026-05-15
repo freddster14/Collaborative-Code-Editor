@@ -139,7 +139,6 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
   }
 
   if(!data) return <div>Loading...</div>
-
   return(
     <div>
       {
@@ -164,7 +163,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
                 : <div>No users, search again</div>
               }
               </div>
-              <button onClick={() => setViewSelected(true)}>View Selected</button>
+              { selectedUsers.size > 0 && <button onClick={() => setViewSelected(true)}>View Selected</button> }
             </div>
           : <div>
               <button onClick={() => setViewSelected(false)}>Back</button>
@@ -210,7 +209,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
               {updatedUsers.size > 0 && <button type="submit" disabled={isSubmitting}>{ isSubmitting ? "Updating..." : "Update"}</button>}
             </form>
           </div> 
-        : <div>No user has access <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
+        : <div>{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
       }
     </div>
   )

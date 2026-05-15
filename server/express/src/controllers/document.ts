@@ -67,7 +67,6 @@ export const recentDocs = async (req: Request, res: Response, next: NextFunction
         viewAt: 'desc'
       },
     })
-
     res.status(200).json(docs)
   } catch (error) {
     next(error)
