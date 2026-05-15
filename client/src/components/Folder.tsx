@@ -3,6 +3,7 @@ import { bodyRequest } from "../api/api-requests";
 import { useState } from "react";
 import Roles from "./Roles";
 import EditForm from "./EditForm";
+import { PRIVILED_ROLES } from "../utils/contants";
 
 export default function FolderData() {
   const data = useLoaderData();
@@ -81,13 +82,17 @@ export default function FolderData() {
         {data.documents.map(e => (
           <div key={e.id}>
             <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>Document: {e.name}</p>
-            <button onClick={() => setOptions(`${e.id}-d`)}>Options</button>
-            { options === `${e.id}-d` &&
-              <div>
-                <button onClick={() => openEdit(e.id, e.name, 'document')}>Edit</button>
-                <button onClick={() => openRoles(e.id)}>Roles</button>
-                <button onClick={() => handleDelete(e.id, 'document')}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button>
-              </div>
+            { PRIVILED_ROLES.includes(e.users[0]?.role) && 
+            <div>
+              <button onClick={() => setOptions(`${e.id}-d`)}>Options</button>
+              { options === `${e.id}-d` &&
+                <div>
+                  <button onClick={() => openEdit(e.id, e.name, 'document')}>Edit</button>
+                  <button onClick={() => openRoles(e.id)}>Roles</button>
+                  <button onClick={() => handleDelete(e.id, 'document')}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button>
+                </div>
+              }
+            </div>
             }
           </div>
         ))}

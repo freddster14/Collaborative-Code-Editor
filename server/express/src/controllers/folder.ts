@@ -25,6 +25,14 @@ export const getFolder = async (req: Request, res: Response, next: NextFunction)
           select: {
             id: true,
             name: true,
+            users: {
+              where: {
+                userId: req.user.id
+              },
+              select: {
+                role: true,
+              }
+            }
           },
           orderBy: {
             name: 'asc'
