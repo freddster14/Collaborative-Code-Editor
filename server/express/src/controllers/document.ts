@@ -3,7 +3,7 @@ import { prisma } from "../../../prisma/client.ts";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.ts";
-import type { Role } from "../../../generated/prisma/enums.ts";
+import { Role } from "../../../generated/prisma/enums.ts";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);
@@ -75,7 +75,7 @@ export const recentDocs = async (req: Request, res: Response, next: NextFunction
 }
 
 export const transferOwnership = async (req: Request, res: Response, next: NextFunction) => {
-  const userId:number = Number(req.body.userId);
+  const id:number = Number(req.body.id);
   const docId:number = Number(req.params.docId);
   try {
     // Verify user's ownership
@@ -88,24 +88,20 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
       }
     });
     if (!owner) return res.status(404).send("Document not found");
-    if (owner.role !== "OWNER") return res.status(404).send("Not able to change ownership");
-
+    if (owner.role !== Role.OWNER) return res.status(404).send("Not able to change ownership");
     // verify selected user's ownership
     const newOwner: null | {role: Role, userId:number}= await prisma.userDocuments.findUnique({
       where: {
-        userId_documentId: {
-          userId,
-          documentId: docId
-        }
+        id: id
       },
       select: {
         userId: true,
         role: true
       }
     });
-    if (!newOwner) return res.status(404).send("User not found in document");
-    if (!PRIVILED_ROLES.includes(newOwner.role)) return res.status(403).send("Not able to be promoted");
 
+    if (!newOwner) return res.status(404).send("User not found in document");
+    if (newOwner.role !== Role.ADMIN) return res.status(403).send("Not able to be promoted");
     await prisma.$transaction(async (prisma) => {
       await prisma.userDocuments.update({
         where: {
@@ -125,11 +121,11 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
           }
         },
         data: {
-          role: "VIEW"
+          role: "ADMIN"
         }
       });
     });
-    res.status(200);
+    res.status(200).json({ msg: "Transfered"});
   } catch (error) {
     next(error)
   }
@@ -222,6 +218,51 @@ export const getRoles = async (req:Request<{docId:string}>, res:Response, next:N
     res.status(200).json(userRoles)
   } catch (error) {
     next(error);
+  }
+}
+
+export const getAdmins = async (req:Request<{docId:string}>, res:Response, next:NextFunction) => {
+  const docId = Number(req.params.docId)
+  try {
+    // verify document exists & user is owner
+    const user = await prisma.userDocuments.findUnique({
+      where: {
+        userId_documentId: {
+          userId: req.user.id,
+          documentId: docId
+        },
+      },
+      select: {
+        role: true
+      }
+    });
+    if (!user) return res.status(404).send("Document not found");
+    if (user.role !== Role.OWNER) return res.status(400).send("Not able to grab admins");
+
+    const admins = await prisma.userDocuments.findMany({
+      where: {
+        documentId: docId,
+        role: Role.ADMIN
+      },
+      select: {
+        id:true,
+        role: true,
+        user: {
+          select: {
+            id:true,
+            username: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    res.status(200).json(admins)
+
+  } catch (error) {
+    next(error)
   }
 }
 
@@ -371,7 +412,7 @@ export const removeAccess = async (req:Request<{docId:string, id:string}>, res:R
   const docId = Number(req.params.docId);
   const id = Number(req.params.id);
   try {
-    // validate user and user that will be removed
+    // grab user, user that'll be removed, and folderId
     const users = await prisma.userDocuments.findMany({
       where: {
           OR: [
@@ -381,30 +422,42 @@ export const removeAccess = async (req:Request<{docId:string, id:string}>, res:R
             },
             { id }
           ]
-       
         },
         select: {
           id: true,
           userId: true,
-          role: true
+          role: true,
+          document: {
+            select: {
+              folder: {
+                select: {
+                  userId: true,
+                }
+              }
+            }
+          }
         }
     });
+    if (users.length === 0) return res.status(404).send("Document not found");
+
     const userMarked = users.find(u => u.id === id)
-    const usersRoles = new Map();
-    for(const u of users) {
-      usersRoles.set(u.userId, u.role)
-    };
-    if (!usersRoles.has(req.user.id)) return res.status(404).send("Document not found");
-    if ( !userMarked || !usersRoles.has(userMarked.userId)) return res.status(404).send("User not found");
+    const user = users.find(u => req.user.id === u.userId);
+    
+    if (!user) return res.status(404).send("Document not found");
+    if (!userMarked) return res.status(404).send("User not found");
     
     // validate role hierchy
-    if(req.user.id !== userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) >= AVAILABLE_ROLES.indexOf(usersRoles.get(userMarked.userId))) {
-      return res.status(400).send("Can not remove access to this user")
-    } else if ( req.user.id === userMarked.userId && AVAILABLE_ROLES.indexOf(usersRoles.get(req.user.id)) === 0) {
+    if (req.user.id !== userMarked.userId) {
+      if(!PRIVILED_ROLES.includes(user.role)) return res.status(400).send("You can not remove access")
+      if (AVAILABLE_ROLES.indexOf(user.role) >= AVAILABLE_ROLES.indexOf(userMarked.role))  return res.status(400).send("Can not remove access to this user")
+        
+    } else if (req.user.id === userMarked.userId && userMarked.role === Role.OWNER) {
       return res.status(400).send("Must transer document ownership or delete")
-    } else if (!PRIVILED_ROLES.includes(usersRoles.get(req.user.id)) && req.user.id !== userMarked.userId) {
-      return res.status(400).send("You can not remove access")
     }
+
+    // can not remove folder owner
+    if (users[0]?.document.folder.userId === userMarked.userId) return res.status(400).send("Can not remove folder owner");
+
     // remove user
     await prisma.userDocuments.delete({
       where: {

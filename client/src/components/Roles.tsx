@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { bodyRequest, getRequest } from "../api/api-requests";
 import { AVAILABLE_ROLES } from "../utils/contants";
 import type { UserRole } from "../types/user";
+import TransferOwernship from "./TransferOwnership";
 
 export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (boolean) => void, userRole:string}) {
   const [data, setData] = useState(null); // Change to Map object to scale on change and deletion
   const [addNew, setAddNew] = useState(false);
+  const [transfer, setTransfer] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [input, setInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -183,10 +185,13 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
               </form>
               
             </div> 
+        : transfer 
+        ? <TransferOwernship docId={docId} viewTransfer={setTransfer}/>
         : data.size > 0
-        ? <div>
+          ? <div>
             <button onClick={() => viewRoles(false)}>Close</button>
             <button onClick={() => setAddNew(true)}>ADD USERS</button>
+            <button onClick={() => setTransfer(true)}>Transfer Ownership</button>
             <form onSubmit={handleSubmitUpdate}>
               <ul>
               {Array.from(data.entries()).map(([key, value]) => (
