@@ -3,12 +3,12 @@ import Home from "../pages/Home.tsx";
 import SignUp from "../pages/SignUp.tsx";
 import SignIn from "../pages/SignIn.tsx";
 import Dashboard from "../pages/Dashboard.tsx";
-import Documents from "../pages/RecentDocuments.tsx";
+import Documents from "../pages/Documents.tsx";
 import Editor from "../pages/Editor.tsx";
 import FolderData from "../pages/Folder.tsx";
 import { getRequest, getUser } from "../api/api-requests.ts";
 import Intro from "../pages/Intro.tsx";
-import RecentDocuments from "../pages/RecentDocuments.tsx";
+import DocumentData from "../components/DocumentData.tsx";
 
 const router = createBrowserRouter([
   {
@@ -39,37 +39,48 @@ const router = createBrowserRouter([
           {
             index: true,
             loader: async () => {
-              try {
-                return await getRequest("/folder");
-
-              } catch (error) {
-                console.error(error)
-              }
+              try { return await getRequest("/folder") }
+              catch (error) { console.error(error) }
             },
             Component: FolderData
           },
           {
             path: "folder/:folderId",
             loader: async ({ params }) => {
-              try {
-                return await getRequest(`/folder/${params.folderId}`)
-
-              } catch (error) {
-                console.error(error)
-              }
+              try { return await getRequest(`/folder/${params.folderId}`) }
+              catch (error) { console.error(error) }
             },
             Component: FolderData
           },
           {
-            path: 'recent',
-            loader: async () => {
-              try {
-                return await getRequest('/document')
-              } catch (error) {
-                console.error(error)
-              }
-            },
-            Component: RecentDocuments
+            path: 'documents',
+            Component: Documents,
+            children: [
+              {
+                index: true,
+                loader: async () => {
+                  try { return await getRequest('/document') }
+                  catch (error) { console.error(error) }
+                },
+                Component: DocumentData
+              },
+              {
+                path: 'recent',
+                loader: async () => {
+                  try { return await getRequest('/document/recent') }
+                  catch (error) { console.error(error) }
+                },
+                Component: DocumentData
+              },
+              {
+                path: 'shared',
+                loader: async () => {
+                  try { return await getRequest('/document/shared') }
+                  catch (error) { console.error(error) }
+                },
+                Component: DocumentData
+              },
+            ]
           },
           {
             path: "edit/:docId",

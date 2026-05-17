@@ -61,6 +61,31 @@ export const recentDocs = async (req: Request, res: Response, next: NextFunction
         userId: req.user.id
       },
       include: {
+        document: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      orderBy: {
+        viewAt: 'desc'
+      },
+    })
+    res.status(200).json(docs)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const myDocs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const docs = await prisma.userDocuments.findMany({
+      where: {
+        userId: req.user.id,
+        role: Role.OWNER
+      },
+      include: {
         document: true,
       },
       orderBy: {
@@ -73,6 +98,25 @@ export const recentDocs = async (req: Request, res: Response, next: NextFunction
   }
 }
 
+export const sharedDocs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const docs = await prisma.userDocuments.findMany({
+      where: {
+        userId: req.user.id,
+        role: { not: Role.OWNER }
+      },
+      include: {
+        document: true,
+      },
+      orderBy: {
+        viewAt: 'desc'
+      },
+    })
+    res.status(200).json(docs)
+  } catch (error) {
+    next(error)
+  }
+}
 export const transferOwnership = async (req: Request, res: Response, next: NextFunction) => {
   const id:number = Number(req.body.id);
   const docId:number = Number(req.params.docId);

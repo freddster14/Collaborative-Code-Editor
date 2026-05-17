@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { createDoc, deleteDocument, editRoles, generateWebsocketToken, getAdmins, getRoles, grantAccess, recentDocs, removeAccess, transferOwnership, updateDoc } from "../controllers/document.ts";
+import { createDoc, deleteDocument, editRoles, generateWebsocketToken, getAdmins, getRoles, grantAccess, myDocs, recentDocs, removeAccess, sharedDocs, transferOwnership, updateDoc } from "../controllers/document.ts";
 import { authenticateUser } from "../middlewares/authenticate.ts";
 
 const document = Router()
 
-document.get('/', authenticateUser, recentDocs);
+document.get('/', authenticateUser, myDocs);
+document.get('/recent', authenticateUser, recentDocs)
+document.get('/shared', authenticateUser, sharedDocs)
 document.get('/:docId', authenticateUser, generateWebsocketToken);
 document.get('/roles/:docId', authenticateUser, getRoles);
 document.get('/admins/:docId', authenticateUser, getAdmins);

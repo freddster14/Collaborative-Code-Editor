@@ -22,9 +22,9 @@ export default function Nav() {
       {location.pathname.includes('dashboard') ? 
       <div>
         <h1 onClick={() => navigate('/dashboard')}>Dashboard</h1>
-      <p>Welcome to your dashboard</p>
-      <p>Username: {user?.username}</p>
-      <button onClick={handleLogout}>Log off</button>
+        <p>Welcome to your dashboard</p>
+        <p>Username: {user?.username}</p>
+        <button onClick={handleLogout}>Log off</button>
       </div>
       : user ?
       <div className="flex">
