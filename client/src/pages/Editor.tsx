@@ -11,6 +11,7 @@ export default function Binding() {
   const user = useRouteLoaderData('user');
   const ydoc = useMemo(() => new Y.Doc(), [])
   const [token, setToken] = useState(null)
+  const [role, setRole] = useState(null)
   const [editor , setEditor] = useState(null);
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const [binding, setBinding] = useState<MonacoBinding | null>(null)
@@ -22,7 +23,8 @@ export default function Binding() {
     async function getToken() {
       try {
         const res = await getRequest(`/document/${docId}`)
-        setToken(res)
+        setToken(res.token)
+        setRole(res.role)
       } catch (error) {
         console.error(error)
         navigate(-1)
@@ -101,8 +103,15 @@ export default function Binding() {
     }
   }, [ydoc, provider, editor])
 
-
   return (
-    <Editor height="90vh" defaultLanguage='javascript' theme='vs-dark' onMount={editor => { setEditor(editor)}}/>
+    <Editor
+      height="90vh"
+      defaultLanguage='javascript'
+      theme='vs-dark'
+      onMount={editor => { setEditor(editor)}}
+      options={{
+        readOnly: role === "VIEW"
+      }}
+    />
   )
 }

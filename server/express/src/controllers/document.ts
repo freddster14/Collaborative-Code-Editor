@@ -545,15 +545,20 @@ export const generateWebsocketToken = async (req: Request, res:Response, next: N
   const docId = Number(req.params.docId);
   try {
     // Verify user can access document
-    const authorized = await prisma.userDocuments.count({
+    const authorized = await prisma.userDocuments.findUnique({
       where: {
+        userId_documentId: {
           userId: req.user.id,
           documentId: docId
+        }
+      },
+      select: {
+        role: true,
       }
     })
 
     // return page not found error
-    if(authorized === 0) return res.status(404).send("Not authotorized/Page not found")
+    if(!authorized) return res.status(404).send("Not authotorized/Page not found")
       
     const wsToken = jwt.sign(
       { id: docId, userId: req.user.id, username: req.user.username },
@@ -561,7 +566,7 @@ export const generateWebsocketToken = async (req: Request, res:Response, next: N
       { expiresIn: 60 * 15 } // 15min
     )
 
-    res.status(201).json(wsToken)
+    res.status(201).json({ token: wsToken, role: authorized.role})
   } catch (error) {
     next(error)    
   }
