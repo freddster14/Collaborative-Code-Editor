@@ -9,6 +9,5 @@ const redis = createClient({
         port: 15005
     }
 });
-redis.on('error', err => console.log('Redis Client Error', err));
 
 export default redis

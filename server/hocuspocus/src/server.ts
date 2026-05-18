@@ -1,9 +1,10 @@
+import "dotenv/config";
 import { Server } from "@hocuspocus/server";
 import jwt from "jsonwebtoken";
 import requireEnv from "./utils/env.js";
 import type { WSToken } from "./types/ws.js";
 import redis from "../redis.js";
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "../prisma/client.js";
 import * as Y from "yjs";
 
 await redis.connect()

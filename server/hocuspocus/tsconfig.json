@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": "../",
+    "rootDir": "./",
     "outDir": "./dist",
 
     // Environment Settings
@@ -26,8 +26,6 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "strict": true,
     "jsx": "react-jsx",
@@ -36,5 +34,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src"],
 }

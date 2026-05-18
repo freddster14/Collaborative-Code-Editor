@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  username    String    @unique
+  hashedPass  String
+  createdAt   DateTime  @default(now())
+  documents   UserDocuments[]
+  folders     Folder[]
+}
+
+model Document {
+  id          Int       @id @default(autoincrement())
+  name        String
+  doc         Bytes?     @db.ByteA
+  folder      Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId    Int
+  users       UserDocuments[]
+  createdAt   DateTime  @default(now())
+
+  @@unique([name, folderId]) // Unique document name in folder
+}
+
+model Folder {
+  id        Int         @id @default(autoincrement())
+  userId    Int   
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId  Int?
+  parent    Folder?     @relation("Folders", fields: [parentId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime    @default(now())
+  documents Document[]
+  folders   Folder[]    @relation("Folders")
+
+  @@unique([name, parentId]) // Unique folder name in parent folder
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDIT
+  VIEW
+}
+
+model UserDocuments {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documentId  Int  
+  document    Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  role        Role        @default(VIEW)
+  createdAt   DateTime    @default(now())
+  viewAt      DateTime    @default(now())
+  
+  @@unique([userId, documentId]) // Prevent duplicate entries
+  @@index([userId]) // Fast lookup for users' documents
+}
