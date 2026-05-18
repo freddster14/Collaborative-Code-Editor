@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import { bodyRequest, getRequest } from "../api/api-requests"
+import type { Admin } from "../types/user";
 
 export default function TransferOwernship({docId, viewTransfer}: {docId:number, viewTransfer: (boolean) => void}) {
-  const [admins, setAdmins] = useState(null);
-  const [isTransferring, setIsTransferring] = useState(null)
+  const [admins, setAdmins] = useState<null | Admin[]>(null);
+  const [isTransferring, setIsTransferring] = useState(0)
 
   useEffect(() => {
     async function getAdmins() {
@@ -24,7 +25,7 @@ export default function TransferOwernship({docId, viewTransfer}: {docId:number, 
     } catch (error) {
       console.error(error)
     } finally {
-      setIsTransferring(null)
+      setIsTransferring(0)
     }
   }
   if (!admins) return <div>Loading...</div>

@@ -2,9 +2,10 @@ import { useState } from "react"
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { PRIVILED_ROLES } from "../utils/contants";
 import Options from "./Options";
+import type { DocumentData } from "../types/document";
 
 export default function DocumentData() {
-  const data = useLoaderData();
+  const data: DocumentData[] = useLoaderData();
   const navigate = useNavigate();
   const [options , setOptions] = useState<string>('');
 

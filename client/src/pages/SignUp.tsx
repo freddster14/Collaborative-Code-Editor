@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
 import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
+import type { User } from "../types/user";
 
 export default function SignIn() {
-  const user = useRouteLoaderData('user')
+  const user: User = useRouteLoaderData('user')
   if (user) return <Navigate to='/dashboard'/>
 
   const [email, setEmail] = useState("");

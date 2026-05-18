@@ -5,17 +5,17 @@ import type { UserRole } from "../types/user";
 import TransferOwernship from "./TransferOwnership";
 
 export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (boolean) => void, userRole:string}) {
-  const [data, setData] = useState(null); // Change to Map object to scale on change and deletion
+  const [data, setData] = useState<null | Map<number, UserRole>>(null); // Change to Map object to scale on change and deletion
   const [addNew, setAddNew] = useState(false);
   const [transfer, setTransfer] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [input, setInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [searchedUsers, setSearchedUsers] = useState(null); 
-  const [selectedUsers, setSelectedUsers] = useState(new Map());
-  const [updatedUsers, setUpdatedUsers] = useState(new Map());
+  const [searchedUsers, setSearchedUsers] = useState<{ id: number, username: string}[] | null>(null); 
+  const [selectedUsers, setSelectedUsers] = useState<Map<number, Omit<UserRole, "userId">>>(new Map());
+  const [updatedUsers, setUpdatedUsers] = useState<Map<number, Omit<UserRole, "userId">>>(new Map());
   const [viewSelected, setViewSelected] = useState(false);
-  const [isRemoving, setIsRemoving] = useState(null);
+  const [isRemoving, setIsRemoving] = useState(0);
   const roles = AVAILABLE_ROLES.slice(AVAILABLE_ROLES.indexOf(userRole) + 1);
 
   // grab document roles
@@ -134,7 +134,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
       setData(prev)
       console.error(error)
     } finally {
-      setIsRemoving(null)
+      setIsRemoving(0)
     }
   }
 

@@ -11,7 +11,16 @@ export interface User {
 }
 
 export interface UserRole {
-  userId: number,
-  username: string,
-  role: string
+  userId: number;
+  username: string;
+  role: string;
+}
+
+export interface Admin {
+  id: number,
+  role: string,
+  user: {
+    id: number,
+    username: string,
+  }
 }

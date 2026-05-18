@@ -96,8 +96,8 @@ export default function Binding() {
   useEffect(() => {
     if (provider === null || editor === null) return;
 
-    const binding = new MonacoBinding(ydoc.getText(), editor.getModel(), new Set([editor]), provider.awareness);
-    setBinding(binding)
+    const currBinding = new MonacoBinding(ydoc.getText(), editor.getModel(), new Set([editor]), provider.awareness);
+    setBinding(currBinding)
     return () => {
       binding.destroy();
     }
