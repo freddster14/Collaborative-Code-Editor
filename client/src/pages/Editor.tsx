@@ -33,12 +33,11 @@ export default function Binding() {
     }
     getToken();
   }, [])
-
   // lifetime for ydoc and provider
   useEffect(() => {
     if (!token) return;
     const provider = new HocuspocusProvider({
-      url: 'ws://127.0.0.1:1235',
+      url: import.meta.env.VITE_HOCUSPOCUS_URL,
       name: `document-${docId}`,
       document: ydoc,
       onAuthenticationFailed: () => {
