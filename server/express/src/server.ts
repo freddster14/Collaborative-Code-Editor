@@ -19,10 +19,7 @@ await redis.connect();
 
 
 const PORT = process.env.PORT || 3000;
-app.use((req, res, next) => {
-  console.log(req.method, req.path);
-  next();
-})
+
 app.use('/', index);
 app.use('/document', document);
 app.use('/folder', folder);

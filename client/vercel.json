@@ -5,14 +5,5 @@
       "destination": "https://collaborative-code-editor-2gms.onrender.com/:path*" 
     },
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
- "headers": [
-  {
-    "source": "/api/(.*)",
-    "headers": [
-      { "key": "Cache-Control", "value": "no-store" },
-      { "key": "X-Vercel-Enable-Rewrite-Caching", "value": "0" }
-    ]
-  }
-]
+  ]
 }
