@@ -2,7 +2,7 @@
   "rewrites": [
     { 
       "source": "/api/:path*", 
-      "destination": "https://message-app-gvu9.onrender.com/:path*" 
+      "destination": "https://collaborative-code-editor-2gms.onrender.com/:path*" 
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
