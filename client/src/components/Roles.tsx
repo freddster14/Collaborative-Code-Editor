@@ -38,7 +38,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
   const handleSearch = async () => {
     setIsSubmitting(true);
     try {
-      const res = await getRequest(`/user/search/${docId}/?search=${input}`)
+      const res = await getRequest(`/user/search/${docId}?search=${input}`)
       setSearchedUsers(res)
     } catch (error) {
       console.error(error)
