@@ -9,6 +9,7 @@ export const getUser = async (req: Request, res:Response) => {
 export const searchUsersOnDoc = async (req:Request<{docId:string}, {}, {}, {search:string}>, res:Response, next:NextFunction) => {
   const docId = Number(req.params.docId);
   const query = req.query.search;
+  console.log(docId, query)
   try {
 
     // verify user's authorization
@@ -47,7 +48,7 @@ export const searchUsersOnDoc = async (req:Request<{docId:string}, {}, {}, {sear
         username: true,
       }
     });
-
+    console.log(users)
     res.status(200).json(users)
   } catch (error) {
     next(error);
