@@ -6,12 +6,13 @@
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    }
-  ]
+ "headers": [
+  {
+    "source": "/api/(.*)",
+    "headers": [
+      { "key": "Cache-Control", "value": "no-store" },
+      { "key": "X-Vercel-Enable-Rewrite-Caching", "value": "0" }
+    ]
+  }
+]
 }
