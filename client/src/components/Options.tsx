@@ -3,13 +3,15 @@ import { bodyRequest } from "../api/api-requests";
 import { useRevalidator } from "react-router-dom";
 import Roles from "./Roles";
 import EditForm from "./EditForm";
+import type { FolderLoad, ProjectData } from "../types/folder";
+import type { Document } from "../types/document";
 
-export default function Options({ data, dataType, role }) {
+export default function Options({ data, dataType, role }: {data:FolderLoad | ProjectData | Document, dataType:string, role:string}) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [input, setInput] = useState('');
   const [viewEdit, setViewEdit] = useState(false);
   const [viewRoles, setViewRoles] = useState(false);
-  const [type, setType] = useState<string | null>(dataType);
+  const [type, setType] = useState<string>(dataType);
   const [id, setId] = useState<number | null>(null);
   const revalidator = useRevalidator()
 
@@ -45,8 +47,8 @@ export default function Options({ data, dataType, role }) {
         { type !== 'folder' && <button onClick={() => openRoles(data.id)}>Roles</button> }
         { role === "OWNER" && <button onClick={() => handleDelete(data.id, type)}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button> }
       </div>
-      { viewRoles && <Roles key={id} docId={id} viewRoles={setViewRoles} userRole={role}/>}
-      { viewEdit && <EditForm key={id} docId={id} value={input} type={type} viewEdit={setViewEdit}/> }
+      { viewRoles && id && <Roles key={id} docId={id} viewRoles={setViewRoles} userRole={role}/>}
+      { viewEdit && id && <EditForm key={id} docId={id} value={input} type={type} viewEdit={setViewEdit}/> }
     </>
   )
 }

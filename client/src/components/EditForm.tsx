@@ -1,13 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRevalidator } from "react-router-dom";
 import { bodyRequest } from "../api/api-requests";
 
-export default function EditForm({ docId, value, type, viewEdit }: { docId:number, value:string, type:string, viewEdit: (boolean) => void}) {
+export default function EditForm({ docId, value, type, viewEdit }: { docId:number, value:string, type:string, viewEdit: (arg0:boolean) => void}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [input, setInput] = useState(value)
   const revalidator = useRevalidator();
 
-  const handleEdit = async (e) => {
+  const handleEdit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {

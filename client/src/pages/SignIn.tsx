@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-do
 import type { User } from "../types/user";
 
 export default function SignIn() {
-  const user: User = useRouteLoaderData('user')
+  const user: User | undefined = useRouteLoaderData('user')
   if (user) return <Navigate to='/dashboard'/>
 
   const [identifier, setIdentifier] = useState("");

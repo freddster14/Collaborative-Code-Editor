@@ -4,7 +4,7 @@ import { AVAILABLE_ROLES } from "../utils/contants";
 import type { UserRole } from "../types/user";
 import TransferOwernship from "./TransferOwnership";
 
-export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (boolean) => void, userRole:string}) {
+export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (arg0:boolean) => void, userRole:string}) {
   const [data, setData] = useState<null | Map<number, UserRole>>(null); // Change to Map object to scale on change and deletion
   const [addNew, setAddNew] = useState(false);
   const [transfer, setTransfer] = useState(false);
@@ -90,10 +90,10 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
     }
   }
   // edits current users' roles
-  const handleEdit = (e:React.ChangeEvent<HTMLSelectElement>, id:number, u) => {
+  const handleEdit = (e:React.ChangeEvent<HTMLSelectElement>, id:number, u: UserRole) => {
       setUpdatedUsers(prev => {
         const newData = new Map(prev);
-        if (data.get(id).role === e.target.value) {
+        if (data && data.get(id)?.role === e.target.value) {
           newData.delete(u.userId)
         } else {
           newData.set(u.userId, { username: u.username, role: e.target.value})
@@ -102,7 +102,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
       })
   };
 
-  const handleSubmitUpdate = async (e) => {
+  const handleSubmitUpdate = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     try {

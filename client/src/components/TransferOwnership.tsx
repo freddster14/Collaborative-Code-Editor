@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { bodyRequest, getRequest } from "../api/api-requests"
 import type { Admin } from "../types/user";
 
-export default function TransferOwernship({docId, viewTransfer}: {docId:number, viewTransfer: (boolean) => void}) {
+export default function TransferOwernship({docId, viewTransfer}: {docId:number, viewTransfer: (arg0:boolean) => void}) {
   const [admins, setAdmins] = useState<null | Admin[]>(null);
   const [isTransferring, setIsTransferring] = useState(0)
 
@@ -18,7 +18,7 @@ export default function TransferOwernship({docId, viewTransfer}: {docId:number, 
     getAdmins()
   }, [])
 
-  const transfer = async (id) => {
+  const transfer = async (id:number) => {
     setIsTransferring(id)
     try {
       await bodyRequest(`/document/transfer/${docId}`, { id }, "PUT")

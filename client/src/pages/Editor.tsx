@@ -6,13 +6,14 @@ import { HocuspocusProvider } from '@hocuspocus/provider';
 import { useNavigate, useParams, useRouteLoaderData } from 'react-router-dom';
 import { getRequest } from '../api/api-requests';
 import generateDarkColor from '../utils/generateColor';
+import type { editor } from 'monaco-editor';
 
 export default function Binding() {
   const user = useRouteLoaderData('user');
   const ydoc = useMemo(() => new Y.Doc(), [])
   const [token, setToken] = useState(null)
   const [role, setRole] = useState(null)
-  const [editor , setEditor] = useState(null);
+  const [editor , setEditor] = useState<null | editor.IStandaloneCodeEditor>(null);
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const [binding, setBinding] = useState<MonacoBinding | null>(null)
   const { docId } = useParams();
@@ -45,14 +46,16 @@ export default function Binding() {
       },
       token
     });
-    provider.awareness.on("change", (c) => {
+    provider.awareness?.on("change", (c:{added:number[], removed:number[]}) => {
       const added = c.added;
       const removed = c.removed;
-      const states = provider.awareness.getStates();
+      const states = provider.awareness?.getStates();
+      if(states)
       for(let i = 0; i < added.length; i++) {
         const styleTag = document.createElement('style');
         styleTag.id = `cursor-${added[i]}`
         const userStateFields = states.get(added[i]);
+        if(userStateFields)
         styleTag.innerHTML = `
           .yRemoteSelectionHead-${added[i]} {
             border: 1px solid ${userStateFields.user.color};
@@ -76,7 +79,7 @@ export default function Binding() {
       }
     })
    
-    provider.awareness.setLocalStateField('user', {
+    provider.awareness?.setLocalStateField('user', {
       name: user.username,
       color: generateDarkColor(),
     });
@@ -95,11 +98,13 @@ export default function Binding() {
   // lifetime for editor binding
   useEffect(() => {
     if (provider === null || editor === null) return;
-
-    const currBinding = new MonacoBinding(ydoc.getText(), editor.getModel(), new Set([editor]), provider.awareness);
-    setBinding(currBinding)
+    const model = editor.getModel();
+    if(model) {
+      const currBinding = new MonacoBinding(ydoc.getText(), model, new Set([editor]), provider.awareness);
+      setBinding(currBinding)  
+    }
     return () => {
-      binding.destroy();
+      binding?.destroy();
     }
   }, [ydoc, provider, editor])
 
