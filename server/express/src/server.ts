@@ -3,10 +3,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import errorHandling from './middlewares/error-handling.js';
 import index from './routes/index.js';
-import redis from '../redis.ts';
-import document from './routes/document.ts';
-import folder from './routes/folder.ts';
-import user from './routes/user.ts';
+import redis from '../redis.js';
+import document from './routes/document.js';
+import folder from './routes/folder.js';
+import user from './routes/user.js';
 
 const app = express();
 app.use(cookieParser());

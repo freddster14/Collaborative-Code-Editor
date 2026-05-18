@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createDoc, deleteDocument, editRoles, generateWebsocketToken, getAdmins, getRoles, grantAccess, myDocs, recentDocs, removeAccess, sharedDocs, transferOwnership, updateDoc } from "../controllers/document.ts";
-import { authenticateUser } from "../middlewares/authenticate.ts";
+import { createDoc, deleteDocument, editRoles, generateWebsocketToken, getAdmins, getRoles, grantAccess, myDocs, recentDocs, removeAccess, sharedDocs, transferOwnership, updateDoc } from "../controllers/document.js";
+import { authenticateUser } from "../middlewares/authenticate.js";
 
 const document = Router()
 

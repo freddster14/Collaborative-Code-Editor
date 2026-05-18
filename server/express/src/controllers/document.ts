@@ -1,9 +1,9 @@
 import { type NextFunction, type Request, type Response } from "express"
-import { prisma } from "../../../prisma/client.ts";
+import { prisma } from "../../prisma/client.js";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
-import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.ts";
-import { Role } from "../../../generated/prisma/enums.ts";
+import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);

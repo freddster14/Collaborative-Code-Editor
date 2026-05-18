@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createUser, logoff, signInUser } from "../controllers/index.js";
-import { authenticateUser } from "../middlewares/authenticate.ts";
+import { authenticateUser } from "../middlewares/authenticate.js";
 
 const index = Router()
 

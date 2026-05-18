@@ -1,9 +1,9 @@
 import { type NextFunction, type Request, type Response } from "express"
 import bcrypt from "bcrypt";
-import { prisma } from "../../../prisma/client.ts";
+import { prisma } from "../../prisma/client.js";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
-import type { User } from "../../../generated/prisma/client.ts";
+import type { User } from "../../generated/prisma/client.js";
 
 // add: validate all inputs
 // add: create & add types to Request

@@ -1,8 +1,8 @@
 import { type NextFunction, type Request, type Response } from "express";
 import jwt, { type Jwt, type JwtPayload, type VerifyErrors } from "jsonwebtoken"
 import type { UserToken } from "../types/user-token.js";
-import requireEnv from "../utils/env.ts";
-import redis from "../../redis.ts";
+import requireEnv from "../utils/env.js";
+import redis from "../../redis.js";
 
 export function authenticateUser(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies.token || null;

@@ -1,12 +1,15 @@
 {
+  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "../",
-    "outDir": "./dist",
+     "rootDir": "./",
+     "outDir": "./dist",
 
     // Environment Settings
-    "module": "NodeNext",
-    "target": "ESNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2020",
+    // For nodejs:
     "lib": ["esnext"],
     "types": ["node"],
 
@@ -26,15 +29,15 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
+
+    // Recommended Options
     "esModuleInterop": true,
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src"],
 }

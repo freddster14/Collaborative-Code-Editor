@@ -1,6 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express"
-import { prisma } from "../../../prisma/client.ts";
-import { PRIVILED_ROLES } from "../utils/constants.ts";
+import { prisma } from "../../prisma/client.js";
+import { PRIVILED_ROLES } from "../utils/constants.js";
 
 export const getUser = async (req: Request, res:Response) => {
   res.status(200).json(req.user)
