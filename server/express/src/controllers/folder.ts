@@ -66,7 +66,6 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
   }
 }
 
-// add: validate name
 export const createFolder = async (req: Request<{}, {}, {name:string, parentId:string}>, res: Response, next: NextFunction) => {
   const name = req.body.name;
   const parentId = Number(req.body.parentId);

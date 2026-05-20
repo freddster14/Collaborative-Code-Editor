@@ -139,7 +139,7 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
     // verify selected user's ownership
     const newOwner: null | {role: RoleType, userId:number}= await prisma.userDocuments.findUnique({
       where: {
-        id: id
+        id,
       },
       select: {
         userId: true,
@@ -307,7 +307,6 @@ export const getAdmins = async (req:Request<{docId:string}>, res:Response, next:
     });
 
     res.status(200).json(admins)
-
   } catch (error) {
     next(error)
   }

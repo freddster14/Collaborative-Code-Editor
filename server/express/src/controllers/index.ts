@@ -5,10 +5,8 @@ import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import type { User } from "@cce/shared-types";
 
-// add: validate all inputs
-// add: create & add types to Request
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password, confirm, username } = req.body;
+  const { email, password, username } = req.body;
   try {
     const hashedPass = await bcrypt.hash(password, 10);
 
@@ -37,7 +35,6 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 }
 
-// add: validate all inputs
 export const signInUser = async (req: Request<{}, {}, {identifier:string, password:string}>, res: Response, next: NextFunction) => {
   const { identifier, password } = req.body;
   try {
