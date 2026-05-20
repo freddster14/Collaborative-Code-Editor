@@ -41,7 +41,6 @@
       "@cce/prisma": ["../../packages/prisma/index.ts"],
       "@cce/shared-types": ["../../packages/shared-types/index.ts"],
     },
-    "baseUrl": "."
   },
   "include": ["src"],
 }
