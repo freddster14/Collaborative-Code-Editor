@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response } from "express"
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "@cce/prisma";
 import { PRIVILED_ROLES } from "../utils/constants.js";
 
 export const getUser = async (req: Request, res:Response) => {

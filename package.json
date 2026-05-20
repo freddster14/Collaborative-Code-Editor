@@ -1,0 +1,23 @@
+{
+  "name": "cce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "workspaces": ["packages/*", "server/*", "client/*"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freddster14/Collaborative-Code-Editor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/freddster14/Collaborative-Code-Editor/issues"
+  },
+  "homepage": "https://github.com/freddster14/Collaborative-Code-Editor#readme"
+}

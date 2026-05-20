@@ -18,4 +18,3 @@ export interface UserToken {
   exp: number,
   jti: number
 }
-

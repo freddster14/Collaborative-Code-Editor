@@ -20,7 +20,8 @@
     "tailwindcss": "^4.2.4",
     "y-monaco": "^0.1.6",
     "y-websocket": "^3.0.0",
-    "yjs": "^13.6.30"
+    "yjs": "^13.6.30",
+    "@cce/shared-types": "file:../../packages/shared-types"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -34,6 +35,7 @@
     "globals": "^17.5.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

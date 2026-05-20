@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { PRIVILED_ROLES } from "../utils/contants";
 import Options from "./Options";
-import type { DocumentData } from "../types/document";
+import type { DocumentData } from "@cce/shared-types";
 
 export default function DocumentData() {
   const data: DocumentData[] = useLoaderData();

@@ -2,7 +2,7 @@ import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { PRIVILED_ROLES } from "../utils/contants";
 import Options from "../components/Options";
-import type { FolderLoad, ProjectData } from "../types/folder";
+import type { FolderLoad, ProjectData } from "@cce/shared-types";
 
 export default function FolderData() {
   const data: FolderLoad | ProjectData[] = useLoaderData();

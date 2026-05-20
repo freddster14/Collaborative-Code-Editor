@@ -3,8 +3,8 @@ import { bodyRequest } from "../api/api-requests";
 import { useRevalidator } from "react-router-dom";
 import Roles from "./Roles";
 import EditForm from "./EditForm";
-import type { FolderLoad, ProjectData } from "../types/folder";
-import type { Document } from "../types/document";
+import type { FolderLoad, ProjectData } from "@cce/shared-types";
+import type { Document } from "@cce/shared-types";
 
 export default function Options({ data, dataType, role }: {data:FolderLoad | ProjectData | Document, dataType:string, role:string}) {
   const [isDeleting, setIsDeleting] = useState(false);

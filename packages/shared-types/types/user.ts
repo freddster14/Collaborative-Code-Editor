@@ -1,3 +1,5 @@
+import type { RoleType } from "./document";
+
 export interface UserToken {
   id: number;
   username: string;
@@ -13,12 +15,12 @@ export interface User {
 export interface UserRole {
   userId: number;
   username: string;
-  role: string;
+  role: RoleType;
 }
 
 export interface Admin {
   id: number,
-  role: string,
+  role: RoleType,
   user: {
     id: number,
     username: string,

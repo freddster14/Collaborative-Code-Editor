@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { bodyRequest, getRequest } from "../api/api-requests";
 import { AVAILABLE_ROLES } from "../utils/contants";
-import type { UserRole } from "../types/user";
+import  type { RoleType, UserRole } from "@cce/shared-types";
 import TransferOwernship from "./TransferOwnership";
 
 export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (arg0:boolean) => void, userRole:string}) {
@@ -63,7 +63,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>, id:number, u:{username:string}) => {
     setSelectedUsers(prev => {
       const newData = new Map(prev);
-      newData.set(id, { username: u.username, role: e.target.value})
+      newData.set(id, { username: u.username, role: e.target.value as RoleType})
       return newData
     })
   }
@@ -96,7 +96,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
         if (data && data.get(id)?.role === e.target.value) {
           newData.delete(u.userId)
         } else {
-          newData.set(u.userId, { username: u.username, role: e.target.value})
+          newData.set(u.userId, { username: u.username, role: e.target.value as RoleType})
         }
         return newData
       })

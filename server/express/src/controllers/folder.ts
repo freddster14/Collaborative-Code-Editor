@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { prisma } from "../../prisma/client.js";
-import type { FolderCreateArgs } from "../../generated/prisma/models.js";
+import { prisma } from "@cce/prisma";
+import type { FolderCreateArgs } from "@cce/prisma";
 
 export const getFolder = async (req: Request, res: Response, next: NextFunction) => {
   const id:number = Number(req.params.id);

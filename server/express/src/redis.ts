@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import requireEnv from './src/utils/env.js';
+import requireEnv from './utils/env.js';
 
 const redis = createClient({
     username: 'default',

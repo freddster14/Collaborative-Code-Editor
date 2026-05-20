@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { bodyRequest, getRequest } from "../api/api-requests"
-import type { Admin } from "../types/user";
+import type { Admin } from "@cce/shared-types";
 
 export default function TransferOwernship({docId, viewTransfer}: {docId:number, viewTransfer: (arg0:boolean) => void}) {
   const [admins, setAdmins] = useState<null | Admin[]>(null);

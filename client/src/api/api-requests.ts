@@ -1,4 +1,4 @@
-import { ApiError } from "../types";
+import { ApiError } from "@cce/shared-types";
 
 const API_URL = import.meta.env.MODE === "production" ? '/api' : 'http://localhost:3000';
 

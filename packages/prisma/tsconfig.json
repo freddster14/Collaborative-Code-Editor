@@ -2,15 +2,18 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-     "outDir": "./dist",
+    // "rootDir": "./src",
+    // "outDir": "./dist",
 
     // Environment Settings
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "target": "es2020",
+    // See also https://aka.ms/tsconfig/module
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
     // For nodejs:
-    "lib": ["esnext"],
-    "types": ["node"],
+    // "lib": ["esnext"],
+    // "types": ["node"],
+    // and npm install -D @types/node
 
     // Other Outputs
     "sourceMap": true,
@@ -30,18 +33,13 @@
     // "noPropertyAccessFromIndexSignature": true,
 
     // Recommended Options
-    "esModuleInterop": true,
     "strict": true,
+    "esModuleInterop": true,
     "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "paths": {
-      "@cce/prisma": ["../../packages/prisma/index.ts"],
-      "@cce/shared-types": ["../../packages/shared-types/index.ts"],
-    },
-    "baseUrl": "."
-  },
-  "include": ["src"],
+  }
 }

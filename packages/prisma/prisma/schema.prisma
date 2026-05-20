@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         Int             @id @default(autoincrement())
+  email      String          @unique
+  username   String          @unique
+  hashedPass String
+  createdAt  DateTime        @default(now())
+  folders    Folder[]
+  documents  UserDocuments[]
+}
+
+model Document {
+  id        Int             @id @default(autoincrement())
+  name      String
+  doc       Bytes?
+  folderId  Int
+  createdAt DateTime        @default(now())
+  folder    Folder          @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  users     UserDocuments[]
+
+  @@unique([name, folderId])
+}
+
+model Folder {
+  id        Int        @id @default(autoincrement())
+  parentId  Int?
+  name      String
+  createdAt DateTime   @default(now())
+  userId    Int
+  documents Document[]
+  parent    Folder?    @relation("Folders", fields: [parentId], references: [id], onDelete: Cascade)
+  folders   Folder[]   @relation("Folders")
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, parentId])
+}
+
+model UserDocuments {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  documentId Int
+  role       Role     @default(VIEW)
+  createdAt  DateTime @default(now())
+  viewAt     DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentId])
+  @@index([userId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDIT
+  VIEW
+}

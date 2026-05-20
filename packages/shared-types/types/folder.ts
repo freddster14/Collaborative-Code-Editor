@@ -1,3 +1,5 @@
+import type { RoleType } from "./document";
+
 export type ProjectData = {
   name: string;
   id: number;
@@ -10,7 +12,7 @@ export type FolderLoad = ProjectData & {
   documents: {
     name: string;
     id: number;
-    users: { role: string }[];
+    users: { role: RoleType }[];
   }[],
   folders: {
     name: string;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
 import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
-import type { User } from "../types/user";
+import type { User } from "@cce/shared-types";
 
 export default function SignIn() {
   const user: User | undefined = useRouteLoaderData('user')

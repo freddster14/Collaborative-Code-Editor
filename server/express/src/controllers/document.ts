@@ -1,11 +1,12 @@
 import { type NextFunction, type Request, type Response } from "express"
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "@cce/prisma";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.js";
-import { Role } from "../../generated/prisma/enums.js";
+import { RemoveUserInfo } from "src/types/document.js";
+import  { Role, type DocumentData, type Document } from "@cce/shared-types"
 
-export const createDoc = async (req: Request, res: Response, next: NextFunction) => {
+export const createDoc = async (req: Request, res: Response<Document>, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);
   const name:string = req.body.name;
   try {
@@ -30,11 +31,15 @@ export const createDoc = async (req: Request, res: Response, next: NextFunction)
     // verify document name does not exist within folder
     if (folder.documents.length > 0) return res.status(400).send("Name taken in folder")
 
-    const document = await prisma.$transaction(async (prisma) => {
-      const document = await prisma.document.create({
+    const document: Document = await prisma.$transaction(async () => {
+      const document: Document = await prisma.document.create({
         data: {
           name,
           folderId,
+        },
+        select: {
+          id: true,
+          name:true,
         }
       });
       await prisma.userDocuments.create({
@@ -53,10 +58,9 @@ export const createDoc = async (req: Request, res: Response, next: NextFunction)
   }
 }
 
-
-export const recentDocs = async (req: Request, res: Response, next: NextFunction) => {
+export const recentDocs = async (req: Request, res: Response<DocumentData>, next: NextFunction) => {
   try {
-    const docs = await prisma.userDocuments.findMany({
+    const docs: DocumentData = await prisma.userDocuments.findMany({
       where: {
         userId: req.user.id
       },
@@ -145,7 +149,7 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
 
     if (!newOwner) return res.status(404).send("User not found in document");
     if (newOwner.role !== Role.ADMIN) return res.status(403).send("Not able to be promoted");
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async () => {
       await prisma.userDocuments.update({
         where: {
           userId_documentId: {
@@ -337,7 +341,7 @@ export const grantAccess = async (req: Request<{docId:string},{},{usersId:number
     if(!PRIVILED_ROLES.includes(user.role)) return res.status(404).send("No able to change permissions")
     
     // validate usersId
-    const dbUsersId = await prisma.user.findMany({
+    const dbUsersId: {id:number}[]= await prisma.user.findMany({
         where: { id: {in : usersId }},
         select: { id:true }
       });
@@ -397,7 +401,7 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
     if(!PRIVILED_ROLES.includes(user.role)) return res.status(404).send("Unable to change permissions");
 
     // validate users id
-    const dbUsersId = await prisma.userDocuments.findMany({
+    const dbUsersId: {userId:number, role:string}[] = await prisma.userDocuments.findMany({
       where: {
         userId: {in : usersId },
         documentId: docId
@@ -432,7 +436,7 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
       if(currUserRole >= AVAILABLE_ROLES.indexOf(prevRole)) return res.status(404).send("Could not update roles")
       data.push({ userId, documentId: docId, role })
     };
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async () => {
       for(const d of data) {
         await prisma.userDocuments.update({
           where: { userId_documentId : {
@@ -456,7 +460,7 @@ export const removeAccess = async (req:Request<{docId:string, id:string}>, res:R
   const id = Number(req.params.id);
   try {
     // grab user, user that'll be removed, and folderId
-    const users = await prisma.userDocuments.findMany({
+    const users: RemoveUserInfo[] = await prisma.userDocuments.findMany({
       where: {
           OR: [
             {
