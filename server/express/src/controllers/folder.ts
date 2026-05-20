@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { prisma } from "@cce/prisma";
-import type { FolderCreateArgs } from "@cce/prisma";
+import { prisma, Prisma } from "@cce/prisma";
 
 export const getFolder = async (req: Request, res: Response, next: NextFunction) => {
   const id:number = Number(req.params.id);
@@ -72,7 +71,7 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
   const name = req.body.name;
   const parentId = Number(req.body.parentId);
   try {
-    const queryArgs: FolderCreateArgs = {
+    const queryArgs: Prisma.FolderCreateArgs = {
       data: {
         name,
         userId: req.user.id

@@ -9,6 +9,6 @@ export class ApiError extends Error {
   }
 }
 
-export { type RoleType, Role,  type Document, type DocumentData } from "./types/document"
-export type { ProjectData, FolderLoad } from "./types/folder"
-export type { UserToken, UserRole, User, Admin } from "./types/user"
+export { type RoleType, Role,  type Document, type DocumentData } from "./types/document.js"
+export type { ProjectData, FolderLoad } from "./types/folder.js"
+export type { UserTokenInfo, UserRole, User, Admin } from "./types/user.js"

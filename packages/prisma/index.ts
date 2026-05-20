@@ -1,5 +1,5 @@
-import { prisma } from "./prisma/client";
+import { prisma } from "./prisma/client.js";
 
-export * from './generated/prisma/enums';
-export type { FolderCreateArgs } from './generated/prisma/models'
+export * from './generated/prisma/enums.js';
+export { Prisma } from './generated/prisma/client.js'
 export { prisma };

@@ -1,4 +1,4 @@
-import type { RoleType } from "./document";
+import type { RoleType } from "./document.js";
 
 export type ProjectData = {
   name: string;

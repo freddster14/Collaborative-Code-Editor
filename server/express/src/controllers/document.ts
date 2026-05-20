@@ -3,10 +3,10 @@ import { prisma } from "@cce/prisma";
 import jwt from "jsonwebtoken";
 import requireEnv from "../utils/env.js";
 import { AVAILABLE_ROLES, PRIVILED_ROLES } from "../utils/constants.js";
-import { RemoveUserInfo } from "src/types/document.js";
-import  { Role, type DocumentData, type Document } from "@cce/shared-types"
+import { RemoveUserInfo } from "../types/document.js";
+import  { Role, type RoleType, type DocumentData, type Document } from "@cce/shared-types"
 
-export const createDoc = async (req: Request, res: Response<Document>, next: NextFunction) => {
+export const createDoc = async (req: Request, res: Response<Document | string>, next: NextFunction) => {
   const folderId:number = Number(req.params.folderId);
   const name:string = req.body.name;
   try {
@@ -126,7 +126,7 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
   const docId:number = Number(req.params.docId);
   try {
     // Verify user's ownership
-    const owner: null | {role:Role} = await prisma.userDocuments.findUnique({
+    const owner: null | {role:RoleType} = await prisma.userDocuments.findUnique({
       where: {userId_documentId : {
         userId: req.user.id, documentId: docId
       }},
@@ -137,7 +137,7 @@ export const transferOwnership = async (req: Request, res: Response, next: NextF
     if (!owner) return res.status(404).send("Document not found");
     if (owner.role !== Role.OWNER) return res.status(404).send("Not able to change ownership");
     // verify selected user's ownership
-    const newOwner: null | {role: Role, userId:number}= await prisma.userDocuments.findUnique({
+    const newOwner: null | {role: RoleType, userId:number}= await prisma.userDocuments.findUnique({
       where: {
         id: id
       },
@@ -182,7 +182,7 @@ export const updateDoc = async (req: Request<{docId:string}, {}, {name:string}>,
   const docId:number = Number(req.params.docId);
   const name  = req.body.name; 
   try {
-    const document:{ folderId:number; users:{ role: Role }[] } | null = await prisma.document.findUnique({
+    const document:{ folderId:number; users:{ role: RoleType }[] } | null = await prisma.document.findUnique({
       where: {
         id: docId,
         users: {
@@ -246,7 +246,7 @@ export const getRoles = async (req:Request<{docId:string}>, res:Response, next:N
 
     if(!user) return res.status(404).send("Document not found");
     if (!PRIVILED_ROLES.includes(user.role)) return res.status(400).send("Unable to view roles");
-    const roles: Role[] = PRIVILED_ROLES.slice(0, PRIVILED_ROLES.indexOf(user.role) + 1)
+    const roles: RoleType[] = PRIVILED_ROLES.slice(0, PRIVILED_ROLES.indexOf(user.role) + 1)
     const userRoles = await prisma.userDocuments.findMany({
       where: {
         documentId: docId,
@@ -314,7 +314,7 @@ export const getAdmins = async (req:Request<{docId:string}>, res:Response, next:
 }
 
 
-export const grantAccess = async (req: Request<{docId:string},{},{usersId:number[], roles:Role[]}>, res: Response, next: NextFunction) => {
+export const grantAccess = async (req: Request<{docId:string},{},{usersId:number[], roles:RoleType[]}>, res: Response, next: NextFunction) => {
   const usersId = req.body.usersId;
   const roles = req.body.roles;
   const docId:number = Number(req.params.docId);
@@ -326,7 +326,7 @@ export const grantAccess = async (req: Request<{docId:string},{},{usersId:number
     if(doc === 0) return res.status(404).send("Document not found")
 
     // verify user authorization
-    const user: null | {role:Role} = await prisma.userDocuments.findUnique({
+    const user: null | {role:RoleType} = await prisma.userDocuments.findUnique({
       where: {
         userId_documentId: {
           userId: req.user.id,
@@ -359,7 +359,7 @@ export const grantAccess = async (req: Request<{docId:string},{},{usersId:number
 
     // create access to document
     const currUserRole = AVAILABLE_ROLES.indexOf(user.role);
-    const data: {userId:number, documentId:number, role:Role}[] = []
+    const data: {userId:number, documentId:number, role:RoleType}[] = []
     for(let i = 0; i < usersId.length; i++) {
       const userId = usersId[i]
       const role = roles[i] 
@@ -378,7 +378,7 @@ export const grantAccess = async (req: Request<{docId:string},{},{usersId:number
 }
 
 
-export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number[], roles: Role[]}>, res: Response, next: NextFunction) => {
+export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number[], roles: RoleType[]}>, res: Response, next: NextFunction) => {
   const usersId = req.body.usersId
   const roles = req.body.roles
   const docId = Number(req.params.docId)
@@ -386,7 +386,7 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
     if(usersId.length === 0) return res.status(400).send("Nothing to update")
 
     // verify user authorization
-    const user: null | {role:Role} = await prisma.userDocuments.findUnique({
+    const user: null | {role:RoleType} = await prisma.userDocuments.findUnique({
       where: {
         userId_documentId: {
           userId: req.user.id,
@@ -419,7 +419,7 @@ export const editRoles = async (req: Request<{docId:string}, {}, {usersId:number
     }   
 
     // update roles
-    const data: {userId:number, documentId:number, role:Role}[] = [];
+    const data: {userId:number, documentId:number, role:RoleType}[] = [];
     const currUserRole = AVAILABLE_ROLES.indexOf(user.role);
     const prevRoles = new Map();
     for(let u of dbUsersId) {

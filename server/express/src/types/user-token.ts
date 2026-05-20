@@ -1,14 +1,11 @@
+import { UserTokenInfo } from "@cce/shared-types"
+
 declare global {
   namespace Express {
     interface Request {
-      user: User
+      user: UserTokenInfo
     }
   }
-}
-
-export interface User {
-  id: number,
-  username: string,
 }
 
 export interface UserToken {
