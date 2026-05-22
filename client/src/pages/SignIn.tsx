@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
 import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
-import type { User } from "@cce/shared-types";
+import { ApiError, type ErrorType, type User } from "@cce/shared-types";
 
 export default function SignIn() {
   const user: User | undefined = useRouteLoaderData('user')
@@ -9,17 +9,36 @@ export default function SignIn() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<null | ErrorType>(null)
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrors(null)
+
+    const err:ErrorType = {}
+    if (identifier === "") {
+      err.identifier = "Email or Username required";
+    }
+    if (password === "") {
+      err.password = "Password required";
+    }
+    if(Object.keys(err).length > 0) {
+      setErrors(err)
+      return;
+    }
+
     setIsSubmitting(true)
     try {
       await bodyRequest("/sign-in", { identifier, password }, "POST");
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
+      if (err instanceof ApiError) {
+        setErrors(err.errors)
+      } else {
+        setErrors({"main": "Unknown error try again"})
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -34,7 +53,10 @@ export default function SignIn() {
       </div>
       <form onSubmit={handleSubmit}>
         <input type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+        <p>{errors?.identifier}</p>
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <p>{errors?.password}</p>
+        <p>{errors?.main}</p>
         <button type="submit"  disabled={isSubmitting}>{isSubmitting? "Signing in..." : "Sign In"}</button>
       </form>
     </div>

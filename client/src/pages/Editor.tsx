@@ -7,6 +7,7 @@ import { useNavigate, useParams, useRouteLoaderData } from 'react-router-dom';
 import { getRequest } from '../api/api-requests';
 import generateDarkColor from '../utils/generateColor';
 import type { editor } from 'monaco-editor';
+import { Role } from '@cce/shared-types';
 
 export default function Binding() {
   const user = useRouteLoaderData('user');
@@ -16,6 +17,7 @@ export default function Binding() {
   const [editor , setEditor] = useState<null | editor.IStandaloneCodeEditor>(null);
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const [binding, setBinding] = useState<MonacoBinding | null>(null)
+  const [loading, setLoading] = useState(true)
   const { docId } = useParams();
   const navigate = useNavigate()
 
@@ -43,6 +45,9 @@ export default function Binding() {
       onAuthenticationFailed: () => {
         navigate(-1)
       },
+      onSynced: () => {
+        setLoading(false)
+      },
       token
     });
     provider.awareness?.on("change", (c:{added:number[], removed:number[]}) => {
@@ -68,8 +73,7 @@ export default function Binding() {
             font-size: 10px;
             color: white;
             padding: 0 2px;
-          }
-            
+          }   
         `
         document.head.appendChild(styleTag)
       }
@@ -99,6 +103,7 @@ export default function Binding() {
     if (provider === null || editor === null) return;
     const model = editor.getModel();
     if(model) {
+      setLoading(false)
       const currBinding = new MonacoBinding(ydoc.getText(), model, new Set([editor]), provider.awareness);
       setBinding(currBinding)  
     }
@@ -114,7 +119,8 @@ export default function Binding() {
       theme='vs-dark'
       onMount={editor => { setEditor(editor)}}
       options={{
-        readOnly: role === "VIEW"
+        readOnly: role === Role.VIEW || loading,
+        domReadOnly: role === Role.VIEW || loading
       }}
     />
   )

@@ -11,8 +11,9 @@ export const getRequest = async (url: string) => {
         "Content-Type": "application/json",
       },
     });
-    if(!res.ok) throw new ApiError("Get request Error", res.status)
-    return await res.json()
+    const resData = await res.json();
+    if(!res.ok) throw new ApiError("Get request Error", res.status, resData)
+    return resData;
   } catch (error) {
     throw(error)
   }
@@ -28,9 +29,11 @@ export const bodyRequest = async (url: string, data: any, method: string) => {
         "Content-Type": "application/json",
       },
     });
-    if(!res.ok) throw new ApiError(`${method} request Error`, res.status)
     if(res.status === 204) return res;
-    return await res.json();
+
+    const resData = await res.json();
+    if(!res.ok) throw new ApiError(`${method} request Error`, res.status, resData)
+    return resData;
   } catch (error) {
     throw(error)
   }
@@ -39,7 +42,6 @@ export const bodyRequest = async (url: string, data: any, method: string) => {
 export const getUser = async (url:string) => {
   try {
     return await getRequest(url)
-
   } catch (error) {
     return null
   }

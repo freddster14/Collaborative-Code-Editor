@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
 import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
-import type { User } from "@cce/shared-types";
+import { ApiError, type ErrorType, type User } from "@cce/shared-types";
 
-export default function SignIn() {
+export default function SignUp() {
   const user: User | undefined = useRouteLoaderData('user')
   if (user) return <Navigate to='/dashboard'/>
 
@@ -12,16 +12,25 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<null | ErrorType>(null)
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true)
+    setErrors(null);
+
+    if(validateSignIn(email, username, password, confirm, setErrors)) return;
+
+    setIsSubmitting(true);
     try {
       await bodyRequest("/sign-up", { email, password, confirm, username }, "POST");
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
+      if (err instanceof ApiError) {
+        setErrors(err.errors)
+      } else {
+        setErrors({"main": "Unknown error try again"})
+      }
     } finally {
       setIsSubmitting( false)
     }
@@ -36,11 +45,61 @@ export default function SignIn() {
       </div>
       <form onSubmit={handleSubmit}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <p>{errors?.email}</p>
         <input type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <p>{errors?.username}</p>
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <p>{errors?.password}</p>
         <input type="password" placeholder="Confirm Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        <p>{errors?.confirm}</p>
+        <p>{errors?.main}</p>
         <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating Account..." : "Sign Up"}</button>
       </form>
     </div>
   );
+}
+
+function validateSignIn(email:string, username:string, password:string, confirm:string, setErrors: (arg0:ErrorType) => void) {
+  const errors: ErrorType = {}
+  const trimmedEmail = email.trim()
+  const trimmedUsername = username.trim()
+  const trimmedPassword = password.trim()
+  const trimmedConfirm = confirm.trim()
+  
+  if (trimmedEmail === "") {
+    errors.email = "Email required"
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+    errors.email = "Invalid email"
+  }
+
+  if (trimmedUsername === "") {
+    errors.username = "Username required"
+  } else if (trimmedUsername.length < 4) {
+    errors.username = "Username too short"
+  } else if (trimmedUsername.includes('@')) {
+    errors.username = "Can not contain '@'"
+  }
+
+  if (trimmedPassword === "") {
+    errors.password = "Password required"
+  } else if (trimmedPassword.length < 6) {
+    errors.password = "Minimum 6 characters"
+  } else if (!/[A-Z]/.test(trimmedPassword)) {
+    errors.password = "Uppercase character is needed"
+  } else if (!/[\W]/.test(trimmedPassword)) {
+    errors.password = "Missing a special character"
+  }
+
+  if (trimmedConfirm === "") {
+    errors.confirm = "Confirm password"
+  } else if (trimmedPassword !== trimmedConfirm) {
+    errors.confirm = "Password do not match"
+  }
+
+  if (Object.keys(errors).length > 0) {
+    setErrors(errors)
+    return true
+  }
+
+  return false
 }

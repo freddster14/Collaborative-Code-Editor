@@ -29,24 +29,30 @@ export default function FolderData() {
         </div> 
       : !Array.isArray(data) && <div>
         <h1>Folder: {data.name}</h1>
-        {data.folders.map(e => (
-          <div key={e.id}>
-            <p onClick={() => navigate(`/dashboard/folder/${e.id}`)}>Folder: {e.name}</p>
-            <button onClick={() => setOptions(`${e.id}-f`)}>Options</button>
-            { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"}/> }
+        {data.folders.length === 0 && data.documents.length === 0
+        ?
+          <div>Start creating folders or documents</div>
+        : <div>
+            {data.folders.map(e => (
+            <div key={e.id}>
+              <p onClick={() => navigate(`/dashboard/folder/${e.id}`)}>Folder: {e.name}</p>
+              <button onClick={() => setOptions(`${e.id}-f`)}>Options</button>
+              { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"}/> }
+            </div>
+            ))}
+            {data.documents.map(e => (
+            <div key={e.id}>
+              <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>Document: {e.name}</p>
+              { PRIVILED_ROLES.includes(e.users[0]?.role) && 
+                <div>
+                  <button onClick={() => setOptions(`${e.id}-d`)}>Options</button>
+                  { options === `${e.id}-d` && <Options data={e} dataType={"document"} role={e.users[0].role}/> }
+                </div>
+              }
+            </div>
+            ))}
           </div>
-        ))}
-        {data.documents.map(e => (
-          <div key={e.id}>
-            <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>Document: {e.name}</p>
-            { PRIVILED_ROLES.includes(e.users[0]?.role) && 
-              <div>
-                <button onClick={() => setOptions(`${e.id}-d`)}>Options</button>
-                { options === `${e.id}-d` && <Options data={e} dataType={"document"} role={e.users[0].role}/> }
-              </div>
-            }
-          </div>
-        ))}
+        }
         </div>
       }
     </div>

@@ -6,6 +6,7 @@ export default function Nav() {
   const user = useRouteLoaderData('user');
   const revalidator = useRevalidator();
   const navigate = useNavigate();
+  
   const handleLogout = async () => {
     try {
       await bodyRequest('/logout', {}, "POST");
