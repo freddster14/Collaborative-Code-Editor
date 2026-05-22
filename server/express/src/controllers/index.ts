@@ -45,10 +45,10 @@ export const signInUser = async (req: Request<{}, {}, {identifier:string, passwo
       user = await prisma.user.findUnique({ where: { username: identifier }})
     }
 
-    if(!user) return res.status(400).send("Invalid credentials");
+    if(!user) return res.status(400).send({ main: "Invalid credentials"});
 
     const isMatch = await bcrypt.compare(password, user.hashedPass);
-    if(!isMatch) return res.status(400).send("Invalid credentials")
+    if(!isMatch) return res.status(400).send({ main: "Invalid credentials"})
 
     const token = jwt.sign(
       { id: user.id, username: user.username, jti: crypto.randomUUID() },

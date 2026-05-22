@@ -10,7 +10,6 @@ export const searchUsersOnDoc = async (req:Request<{docId:string}, {}, {}, {sear
   const docId = Number(req.params.docId);
   const query = req.query.search;
   try {
-
     // verify user's authorization
     const user = await prisma.userDocuments.findUnique({
       where: {
@@ -24,8 +23,8 @@ export const searchUsersOnDoc = async (req:Request<{docId:string}, {}, {}, {sear
       }
     });
 
-    if (!user) return res.status(404).send("Document not found");
-    if (!PRIVILED_ROLES.includes(user.role)) return res.status(400).send("Unable to add users");
+    if (!user) return res.status(404).json({ main: "Document not found" });
+    if (!PRIVILED_ROLES.includes(user.role)) return res.status(400).json({ main: "Unable to add users" });
 
     const users = await prisma.user.findMany({
       where: {
@@ -35,10 +34,8 @@ export const searchUsersOnDoc = async (req:Request<{docId:string}, {}, {}, {sear
           mode: 'insensitive',
         },
         documents: {
-          some: {
-           NOT: {
+          none: {
             documentId: docId
-           }
           }
         }
       },

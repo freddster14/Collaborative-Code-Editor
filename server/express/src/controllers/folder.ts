@@ -40,7 +40,7 @@ export const getFolder = async (req: Request, res: Response, next: NextFunction)
       }
     });
 
-    if (!folder) return res.status(404).send("Folder not found");
+    if (!folder) return res.status(404).json({ main: "Folder not found" });
     
     res.status(200).json(folder)
   } catch (error) {
@@ -66,9 +66,9 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
   }
 }
 
-export const createFolder = async (req: Request<{}, {}, {name:string, parentId:string}>, res: Response, next: NextFunction) => {
+export const createFolder = async (req: Request<{}, {}, {name:string, folderId:string}>, res: Response, next: NextFunction) => {
   const name = req.body.name;
-  const parentId = Number(req.body.parentId);
+  const parentId = Number(req.body.folderId);
   try {
     const queryArgs: Prisma.FolderCreateArgs = {
       data: {
@@ -85,7 +85,7 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
           userId: req.user.id
         }
       })
-      if(parent === 0) return res.status(404).send("Parent folder does not exist")
+      if(parent === 0) return res.status(404).json({ main: "Parent folder does not exist" })
       // verify folder name does not exist within parent folder
       const folder = await prisma.folder.count({
         where: {
@@ -94,7 +94,7 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
           name
         },
       });
-      if (folder > 0) return res.status(400).send("Name taken in folder");
+      if (folder > 0) return res.status(400).json({ main: "Name taken in folder" });
       queryArgs.data.parentId = parentId;
     } else {
       // verify project name is not taken
@@ -105,7 +105,7 @@ export const createFolder = async (req: Request<{}, {}, {name:string, parentId:s
           name,
         },
       });
-      if (folder > 0) return res.status(400).send("Name taken in projects")
+      if (folder > 0) return res.status(400).json({ main: "Name taken in projects" })
     }
 
     const folder = await prisma.folder.create(queryArgs)
@@ -133,11 +133,11 @@ export const updateFolder = async (req: Request<{id:string}, {}, {name:string}>,
         }
       }
     });
-    if (!folder) return res.status(404).send("Folder not found");
+    if (!folder) return res.status(404).json({ main: "Folder not found" });
 
     // verify folder name does not exist within parent folder
     if(folder.parent && folder.parent.folders.length > 0) {
-      return res.status(400).send("Name taken in folder");
+      return res.status(400).json({ main: "Name taken in folder" });
     } else {
       // verify name does not exists in projects
       const project = await prisma.folder.count({
@@ -147,7 +147,7 @@ export const updateFolder = async (req: Request<{id:string}, {}, {name:string}>,
           name
         }
       })
-      if(project > 0) return res.status(400).send("Name taken in projects")
+      if(project > 0) return res.status(400).json({ main: "Name taken in projects" })
     }
     const newFolder = await prisma.folder.update({
       where: {
@@ -172,7 +172,7 @@ export const deleteFolder = async (req: Request<{id:string}>, res: Response, nex
         userId: req.user.id
       }
     });
-    if (access === 0) return res.status(404).send("Folder not found");
+    if (access === 0) return res.status(404).json({ main: "Folder not found" });
 
     await prisma.folder.delete({
       where: {

@@ -1,13 +1,20 @@
 import { prisma, Role } from "@cce/prisma";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, type ValidationError } from "express-validator";
 import { AVAILABLE_ROLES } from "../utils/constants.js";
 import { Request, Response, NextFunction } from "express";
-
+import { ErrorType } from "@cce/shared-types";
 
 export const validateInputs = (req:Request, res:Response, next:NextFunction)  => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
+  const results = validationResult(req)
+  if (!results.isEmpty()) {
+    const arr = results.array()
+    const errors: ErrorType = {}
+    for(const e of arr) {
+      if(e.type === "field") {
+        errors[e.path] = e.msg
+      }
+    }
+    return res.status(400).json(errors)
   }
   next()
 }
@@ -29,17 +36,21 @@ export const validateSignUp = [
     .isEmail().withMessage("Invalid email").bail()
     .custom( async value => {
       const existingUser = await prisma.user.count({where: { email: value }}) 
-      if (existingUser === 0) {
+      if (existingUser > 0) {
         throw new Error("Email already in use")
       }
     }),
   body('username')
     .trim()
     .notEmpty().withMessage("Username required").bail()
-    .isLength({ min: 4 }).withMessage("Username too short")
+    .isLength({ min: 4 }).withMessage("Username too short").bail()
+    .custom(value => {
+      if (value.includes('@')) throw new Error("Can not contain '@'")
+      return true
+    })
     .custom(async value  => {
       const existingUser = await prisma.user.count({where: { username: value }}) 
-      if (existingUser === 0) {
+      if (existingUser > 0) {
         throw new Error("Username already in use")
       }
       return true
