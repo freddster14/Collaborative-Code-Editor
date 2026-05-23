@@ -35,6 +35,7 @@ export const validateSignUp = [
     .notEmpty().withMessage("Email required").bail()
     .isEmail().withMessage("Invalid email").bail()
     .custom( async value => {
+      console.log(value)
       const existingUser = await prisma.user.count({where: { email: value }}) 
       if (existingUser > 0) {
         throw new Error("Email already in use")
