@@ -5,7 +5,6 @@ import Roles from "./Roles";
 import EditForm from "./EditForm";
 import { ApiError, Role, type ErrorType, type FolderLoad, type ProjectData } from "@cce/shared-types";
 import type { Document } from "@cce/shared-types";
-import TransferOwernship from "./TransferOwnership";
 
 export default function Options({ data, dataType, role }: {data:FolderLoad | ProjectData | Document, dataType:string, role:string}) {
   const [isDeleting, setIsDeleting] = useState(false);
