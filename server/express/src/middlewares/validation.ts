@@ -22,26 +22,28 @@ export const validateInputs = (req:Request, res:Response, next:NextFunction)  =>
 export const validateSignIn = [
   body('identifier')
     .trim()
-    .notEmpty().withMessage("Email or Username required").bail()
-    .isString().withMessage("Invalid input").bail(),
+    .isString().withMessage("Invalid input").bail()
+    .notEmpty().withMessage("Email or Username required").bail(),
   body('password')
+    .isString().withMessage("Invalid input").bail()
     .notEmpty().withMessage("Password required"),
   validateInputs
 ]
 
 export const validateSignUp = [
   body("email")
+    .isString().withMessage("Invalid input").bail()
     .trim()
     .notEmpty().withMessage("Email required").bail()
     .isEmail().withMessage("Invalid email").bail()
     .custom( async value => {
-      console.log(value)
       const existingUser = await prisma.user.count({where: { email: value }}) 
       if (existingUser > 0) {
         throw new Error("Email already in use")
       }
     }),
   body('username')
+    .isString().withMessage("Invalid input").bail()
     .trim()
     .notEmpty().withMessage("Username required").bail()
     .isLength({ min: 4 }).withMessage("Username too short").bail()
@@ -57,12 +59,15 @@ export const validateSignUp = [
       return true
     }),
   body('password')
+    .isString().withMessage("Invalid input").bail()
     .trim()
     .notEmpty().withMessage("Password required")
     .isLength({ min: 6 }).withMessage("Minimum 6 characters").bail()
     .matches(/[A-Z]/).withMessage('Uppercase character is needed').bail()
     .matches(/[\W]/).withMessage('Missing a special character').bail(),
   body('confirm')
+    .isString().withMessage("Invalid input").bail()
+
     .trim()
     .notEmpty().withMessage("Confirm password")
     .custom((value, { req }) => {
@@ -76,8 +81,8 @@ export const validateSignUp = [
 
 export const validateName = [
   body("name")
-    .trim()
     .isString().withMessage("Invalid input").bail()
+    .trim()
     .notEmpty().withMessage("Name required"),
   validateInputs
 ]
