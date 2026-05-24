@@ -1,7 +1,15 @@
 import request from "supertest";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import app from "../src/server.js";
 import { prisma } from "@cce/prisma";
+
+vi.mock('../src/redis.js', () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+    connect: vi.fn(),
+  }
+}))
 
 describe("Authentication", () => {
   beforeAll(async () => {

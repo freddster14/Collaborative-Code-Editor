@@ -22,4 +22,5 @@ jobs:
       env: 
         TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
         NODE_ENV: ${{ secrets.NODE_ENV }}
+        SECRET: ${{ secrets.GITHUB_TOKEN }}
     - run: cd server/express && npm test
