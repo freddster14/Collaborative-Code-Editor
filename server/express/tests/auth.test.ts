@@ -112,7 +112,7 @@ describe("Authentication", () => {
     let cookies = [...res.header["set-cookie"]]
     expect(res.statusCode).toBe(200)
     expect(res.body.username).toBe("test101")
-    expect(cookies.find(c => c.includes("token"))).toContain("token=")
+    expect(cookies.find(c => c.includes("token"))).not.toContain("token=;")
 
     res = await agent.post("/logout")
 
