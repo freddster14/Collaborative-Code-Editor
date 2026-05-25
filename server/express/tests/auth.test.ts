@@ -128,4 +128,13 @@ describe("Authentication", () => {
     expect(res.statusCode).toBe(200)
     expect(cookies.find(c => c.includes("token"))).toContain("token=;")  // semi-colon verfies token is empty
   })
+
+  describe("authentication middleware", () => {
+    it("return when no token provided on protected route", async () => {
+      const res = await request(app)
+        .get('/folder')
+      
+      expect(res.statusCode).toBe(401)
+    })
+  })
 });
