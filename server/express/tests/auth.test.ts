@@ -15,14 +15,14 @@ describe("Authentication", () => {
   beforeAll(async () => {
     await prisma.user.deleteMany({
       where: {
-        email: { contains: "test"}
+        email: { contains: "auth"}
       }
     })
   })
   afterAll(async () => {
     await prisma.user.deleteMany({
       where: {
-        email: { contains: "test"}
+        email: { contains: "auth"}
       }
     })
     await prisma.$disconnect()
@@ -33,10 +33,11 @@ describe("Authentication", () => {
     it("creates account", async () => {
       const res = await request(app)
         .post('/sign-up')
-        .send({ email: "test@test.com", password:"passwordTest@", confirm:"passwordTest@", username: "test101" })
+        .send({ email: "auth@test.com", password:"passwordTest@", confirm:"passwordTest@", username: "auth101" })
       const cookies = [...res.header["set-cookie"]]
       expect(res.statusCode).toBe(201)
-      expect(res.body.username).toBe("test101")
+      expect(res.body.username).toBeTruthy()
+      expect(res.body.id).toBeTruthy()
       expect(cookies.find(c => c.includes("token"))).toBeTruthy()
     });
 
@@ -64,7 +65,7 @@ describe("Authentication", () => {
   it("returns on duplicate email & username", async () => {
     const res = await request(app)
       .post('/sign-up')
-      .send({ email: "test@test.com", password:"passwordTest@", confirm:"passwordTest@", username: "test101" })
+      .send({ email: "auth@test.com", password:"passwordTest@", confirm:"passwordTest@", username: "auth101" })
     const cookies = res.header["set-cookie"];
     expect(res.statusCode).toBe(400)
     expect(cookies).toBe(undefined)

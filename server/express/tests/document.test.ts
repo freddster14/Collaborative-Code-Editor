@@ -22,12 +22,9 @@ describe("Document", () => {
   beforeAll(async () => {
     await prisma.user.deleteMany({
       where: {
-        OR: [
-          { email: "doc@test.com" },
-          { email: "docuser2@test.com" },
-        ]
+        email: { contains: "doc"  } ,
       }
-    })
+    });
 
     const user = await prisma.user.create({
       data: {
@@ -45,7 +42,6 @@ describe("Document", () => {
       }
     });
     folderId = folder.id;
-
     const secondUser = await prisma.user.create({
       data: {
         username: "docuser2",
@@ -59,10 +55,7 @@ describe("Document", () => {
   afterAll(async () => {
     await prisma.user.deleteMany({
       where: {
-        OR: [
-          { email: "doc@test.com" },
-          { email: "docuser2@test.com" },
-        ]
+        email: { contains: "doc"  } ,
       }
     });
     await prisma.$disconnect();
@@ -73,7 +66,6 @@ describe("Document", () => {
       const res = await request(app)
         .post(`/document/${folderId}`)
         .send({ name: "MyDocument" });
-
       expect(res.statusCode).toBe(201);
       expect(res.body.name).toBe("MyDocument");
       expect(res.body.id).toBeTruthy();
@@ -82,9 +74,8 @@ describe("Document", () => {
 
     it("returns on invalid folderId", async () => {
       const res = await request(app)
-        .post('/document/-1')
+        .post('/document/9999')
         .send({ name: "OrphanDoc" });
-
       expect(res.statusCode).toBe(404);
       expect(res.body.main).toBe("Folder not found");
     });
@@ -157,7 +148,7 @@ describe("Document", () => {
     });
 
     it("returns when document not found", async () => {
-      const res = await request(app).get('/document/999999');
+      const res = await request(app).get('/document/9999');
 
       expect(res.statusCode).toBe(404);
       expect(res.body.main).toBe("Page not found");
@@ -198,7 +189,7 @@ describe("Document", () => {
 
     it("returns when document not found", async () => {
       const res = await request(app)
-        .put('/document/999999')
+        .put('/document/9999')
         .send({ name: "Ghost" });
 
       expect(res.statusCode).toBe(404);
@@ -215,7 +206,7 @@ describe("Document", () => {
     });
 
     it("returns when document not found", async () => {
-      const res = await request(app).get('/document/roles/999999');
+      const res = await request(app).get('/document/roles/9999');
 
       expect(res.statusCode).toBe(404);
       expect(res.body.main).toBe("Document not found");
@@ -255,11 +246,11 @@ describe("Document", () => {
     it("returns on invalid user ids", async () => {
       const res = await request(app)
         .post(`/document/permission/${docId}`)
-        .send({ usersId: [999999], roles: [Role.VIEW] });
+        .send({ usersId: [9999], roles: [Role.VIEW] });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.main).toBe("Could not add users");
-      expect(res.body.missing).toContain(999999);
+      expect(res.body.missing).toContain(9999);
     });
 
     it("returns when granting role at or above own role", async () => {
@@ -291,7 +282,7 @@ describe("Document", () => {
 
     it("returns when user not found in document", async () => {
       const res = await request(app)
-        .delete(`/document/${docId}/remove/-1`);
+        .delete(`/document/${docId}/remove/9999`);
 
       expect(res.statusCode).toBe(404);
       expect(res.body.main).toBe("User not found");
@@ -366,7 +357,7 @@ describe("Document", () => {
     it("returns on missing users in document", async () => {
       const res = await request(app)
         .put(`/document/roles/${docId}`)
-        .send({ usersId: [-1], roles: [Role.VIEW] });
+        .send({ usersId: [9999], roles: [Role.VIEW] });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.main).toBe("Could not add users");
