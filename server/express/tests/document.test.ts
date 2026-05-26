@@ -2,8 +2,9 @@ import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { prisma } from "@cce/prisma";
 import { Role } from "@cce/shared-types";
+import app from "../src/server.js";
 
-const mockUser = vi.hoisted(() => ({ id: 0, username: "docuser101" }));
+const mockUser = vi.hoisted(() => ({ id: 0, username: "docuser1" }));
 
 vi.mock('../src/middlewares/authenticate.js', () => ({
   authenticateUser: (req: { user: typeof mockUser }, _res: unknown, next: () => void) => {
@@ -11,8 +12,6 @@ vi.mock('../src/middlewares/authenticate.js', () => ({
     next();
   },
 }));
-
-import app from "../src/server.js";
 
 describe("Document", () => {
   let folderId: number;
@@ -24,8 +23,8 @@ describe("Document", () => {
     await prisma.user.deleteMany({
       where: {
         OR: [
-          { email: "doc@m.example.com" },
-          { email: "docuser102@m.example.com" },
+          { email: "doc@test.com" },
+          { email: "docuser2@test.com" },
         ]
       }
     })
@@ -33,7 +32,7 @@ describe("Document", () => {
     const user = await prisma.user.create({
       data: {
         username: mockUser.username,
-        email: "doc@m.example.com",
+        email: "doc@test.com",
         hashedPass: "hashedPass",
       }
     });
@@ -49,8 +48,8 @@ describe("Document", () => {
 
     const secondUser = await prisma.user.create({
       data: {
-        username: "docuser102",
-        email: "docuser102@m.example.com",
+        username: "docuser2",
+        email: "docuser2@test.com",
         hashedPass: "hashedPass",
       }
     });
@@ -61,8 +60,8 @@ describe("Document", () => {
     await prisma.user.deleteMany({
       where: {
         OR: [
-          { email: "doc@m.example.com" },
-          { email: "docuser102@m.example.com" },
+          { email: "doc@test.com" },
+          { email: "docuser2@test.com" },
         ]
       }
     });
@@ -83,7 +82,7 @@ describe("Document", () => {
 
     it("returns on invalid folderId", async () => {
       const res = await request(app)
-        .post('/document/999999')
+        .post('/document/-1')
         .send({ name: "OrphanDoc" });
 
       expect(res.statusCode).toBe(404);
@@ -276,7 +275,6 @@ describe("Document", () => {
       const res = await request(app)
         .post(`/document/permission/${docId}`)
         .send({ usersId: [secondUserId], roles: ["INVALID"] });
-      console.log(res)
       expect(res.statusCode).toBe(400);
       expect(res.body.roles).toBeTruthy();
     });
@@ -286,14 +284,14 @@ describe("Document", () => {
     it("removes user access", async () => {
       const res = await request(app)
         .delete(`/document/${docId}/remove/${secondUserDocId}`);
-
+      
       expect(res.statusCode).toBe(200);
       expect(res.body.msg).toBe("removed");
     });
 
     it("returns when user not found in document", async () => {
       const res = await request(app)
-        .delete(`/document/${docId}/remove/999999`);
+        .delete(`/document/${docId}/remove/-1`);
 
       expect(res.statusCode).toBe(404);
       expect(res.body.main).toBe("User not found");
@@ -306,6 +304,9 @@ describe("Document", () => {
             userId: mockUser.id,
             documentId: docId,
           }
+        },
+        select: {
+          id:true
         }
       });
 
@@ -356,7 +357,7 @@ describe("Document", () => {
     it("returns on empty usersId", async () => {
       const res = await request(app)
         .put(`/document/roles/${docId}`)
-        .send({ usersId: [], roles: [] });
+        .send({ usersId: [], roles: ["ADMIN"] });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.main).toBe("Nothing to update");
@@ -365,7 +366,7 @@ describe("Document", () => {
     it("returns on missing users in document", async () => {
       const res = await request(app)
         .put(`/document/roles/${docId}`)
-        .send({ usersId: [999999], roles: [Role.VIEW] });
+        .send({ usersId: [-1], roles: [Role.VIEW] });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.main).toBe("Could not add users");
@@ -419,12 +420,16 @@ describe("Document", () => {
             userId: secondUserId,
             documentId: docId,
           }
+        },
+        select: {
+          role: true
         }
       });
       expect(owner?.role).toBe(Role.OWNER);
     });
 
     it("returns when not owner", async () => {
+      // mockUser is not owner anymore - secondUser is
       const res = await request(app)
         .put(`/document/transfer/${docId}`)
         .send({ id: secondUserDocId });
