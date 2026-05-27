@@ -1,6 +1,6 @@
 import { ApiError } from "@cce/shared-types";
 
-const API_URL = import.meta.env.MODE === "production" ? '/api' : 'http://localhost:3000';
+const API_URL = import.meta.env.MODE === "production" ? '/api' : import.meta.env.PORT !== undefined ? `http://localhost:${import.meta.env.PORT}` : 'http://localhost:3000';
 
 export const getRequest = async (url: string) => {
   try {
