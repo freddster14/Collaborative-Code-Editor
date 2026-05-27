@@ -11,7 +11,7 @@ await redis.connect()
 
 const server = new Server({
   name: 'hocuspocus-cce-01',
-  port: 1235,
+  port: Number(requireEnv("HOCUSPOCUS_PORT")),
   debounce: 1000 * 60 * 3,
   maxDebounce: 1000 * 60 * 15,
   async onAuthenticate(data) {
