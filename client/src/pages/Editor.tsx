@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import { MonacoBinding } from 'y-monaco';
 import { Editor } from '@monaco-editor/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { useNavigate, useParams, useRouteLoaderData } from 'react-router-dom';
 import { getRequest } from '../api/api-requests';
@@ -16,7 +16,7 @@ export default function Binding() {
   const [role, setRole] = useState(null)
   const [editor , setEditor] = useState<null | editor.IStandaloneCodeEditor>(null);
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
-  const [binding, setBinding] = useState<MonacoBinding | null>(null)
+  const binding = useRef<MonacoBinding | null>(null)
   const [loading, setLoading] = useState(true)
   const { docId } = useParams();
   const navigate = useNavigate()
@@ -100,15 +100,15 @@ export default function Binding() {
 
   // lifetime for editor binding
   useEffect(() => {
-    if (provider === null || editor === null) return;
+    if (provider === null || editor === null || binding.current !== null) return;
     const model = editor.getModel();
     if(model) {
-      setLoading(false)
       const currBinding = new MonacoBinding(ydoc.getText(), model, new Set([editor]), provider.awareness);
-      setBinding(currBinding)  
+      binding.current = currBinding  
     }
+    setLoading(false)
     return () => {
-      binding?.destroy();
+      binding.current = null;
     }
   }, [ydoc, provider, editor])
 
