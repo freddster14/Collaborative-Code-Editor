@@ -6,9 +6,7 @@
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
@@ -55,6 +53,7 @@
 #root {
   width: 1126px;
   max-width: 100%;
+  padding: 0 1rem;
   margin: 0 auto;
   text-align: center;
   border-inline: 1px solid var(--border);
@@ -90,7 +89,31 @@ h1 {
 }
 
 
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+}
 
+.button {
+  border: var(--border) 2px solid;
+  color: var(--text-h);
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+}
+
+.button:hover {
+  background-color: var(--text);
+}
+
+.link {
+  text-decoration: underline var(--text)  1px;
+}
+.link:hover {
+  text-decoration: underline var(--text-h)  1px;
+  color: var(--text-h);
+}
 
 h2 {
   font-size: 24px;
@@ -105,17 +128,3 @@ p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
