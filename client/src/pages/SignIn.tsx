@@ -32,7 +32,7 @@ export default function SignIn() {
     setIsSubmitting(true)
     try {
       await bodyRequest("/sign-in", { identifier, password }, "POST");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       if (err instanceof ApiError) {
         setErrors(err.errors)

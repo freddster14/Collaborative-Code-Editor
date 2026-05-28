@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
-import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Link, Navigate, useNavigate, useRevalidator, useRouteLoaderData } from "react-router-dom";
 import { ApiError, type ErrorType, type User } from "@cce/shared-types";
 
 export default function SignUp() {
@@ -24,7 +24,7 @@ export default function SignUp() {
     setIsSubmitting(true);
     try {
       await bodyRequest("/sign-up", { email, password, confirm, username }, "POST");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       if (err instanceof ApiError) {
         setErrors(err.errors)
