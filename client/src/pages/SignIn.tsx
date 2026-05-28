@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
-import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { Link, Navigate, useRevalidator, useRouteLoaderData } from "react-router-dom";
 import { ApiError, type ErrorType, type User } from "@cce/shared-types";
 
 export default function SignIn() {
@@ -11,7 +11,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<null | ErrorType>(null)
-  const navigate = useNavigate();
+  const revalidator = useRevalidator();
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ export default function SignIn() {
     setIsSubmitting(true)
     try {
       await bodyRequest("/sign-in", { identifier, password }, "POST");
-      navigate("/dashboard", { replace: true });
+      revalidator.revalidate()
     } catch (err) {
       if (err instanceof ApiError) {
         setErrors(err.errors)
