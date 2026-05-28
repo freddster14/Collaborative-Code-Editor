@@ -45,19 +45,19 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen -translate-y-15">
       <div>
       <h1>Sign In</h1>
       <p>Enter your email or username and password to sign in</p>
-      <p>Don't have a account? <Link to="/sign-up">Create Account</Link></p>
+      <p>Don't have a account? <Link className="link" to="/sign-up">Create Account</Link></p>
       </div>
-      <form onSubmit={handleSubmit}>
-        <input type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
-        <p>{errors?.identifier}</p>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <p>{errors?.password}</p>
-        <p>{errors?.main}</p>
-        <button type="submit"  disabled={isSubmitting}>{isSubmitting? "Signing in..." : "Sign In"}</button>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-1 mt-1">
+        <input className="p-1 pl-1" type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+        <p className="text-red-700">{errors?.identifier}</p>
+        <input className="p-1 pl-1" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <p className="text-red-700">{errors?.password}</p>
+        <p className="text-red-700">{errors?.main}</p>
+        <button className="button" type="submit"  disabled={isSubmitting}>{isSubmitting? "Signing in..." : "Sign In"}</button>
       </form>
     </div>
   );
