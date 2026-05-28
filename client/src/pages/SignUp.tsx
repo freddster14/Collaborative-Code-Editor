@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { bodyRequest } from "../api/api-requests";
-import { Link, Navigate, useNavigate, useRevalidator, useRouteLoaderData } from "react-router-dom";
+import { Link, Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 import { ApiError, type ErrorType, type User } from "@cce/shared-types";
 
 export default function SignUp() {
