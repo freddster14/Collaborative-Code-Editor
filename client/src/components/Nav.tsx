@@ -21,9 +21,10 @@ export default function Nav() {
       {location.pathname.includes('dashboard') ? 
       <div className="nav">
         <h1 onClick={() => navigate('/dashboard')}>Dashboard</h1>
-        <p>Welcome to your dashboard</p>
-        <p>Username: {user?.username}</p>
-        <button onClick={handleLogout}>Log off</button>
+        <div className="flex gap-2 items-center">
+          <p className="font-bold p-3">{user?.username}</p>
+          <button className="button" onClick={handleLogout}>Log off</button>
+        </div>
       </div>
       : user ?
       <div className="nav">
