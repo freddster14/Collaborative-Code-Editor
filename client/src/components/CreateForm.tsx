@@ -22,11 +22,11 @@ export default function CreateForm({ folderId, handleClose, type }: { folderId: 
       if (type === "document") {
         await bodyRequest(`/document/${folderId}`, { name }, "POST");
       } else if (type === "folder"){
-        console.log(folderId)
         await bodyRequest("/folder", { name, folderId }, "POST");
       }
       setName('');
       revalidator.revalidate();
+      handleClose()
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.errors)
@@ -39,12 +39,12 @@ export default function CreateForm({ folderId, handleClose, type }: { folderId: 
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <button type="button" onClick={handleClose}>Close</button>
-        <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value) } />
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+      <form onSubmit={handleSubmit} className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">
+        <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" type="button" onClick={handleClose}>&times;</button>
+        <input className="p-1 pl-1" type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value) } />
         <p>{error?.main}</p>
-        <button type="submit" disabled={isSubmitting} >{isSubmitting ? "Creating..." : "Create"}</button>
+        <button className="button" type="submit" disabled={isSubmitting} >{isSubmitting ? "Creating..." : "Create"}</button>
       </form>
     </div>
   )

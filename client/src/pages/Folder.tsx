@@ -11,50 +11,61 @@ export default function FolderData() {
   const [options, setOptions] = useState<string>('')
 
   return (
-    <div>
+    <>
       { Number.isNaN(folderId) && Array.isArray(data)
-      ? <div>
-        <h1>Projects</h1>
+      ? <div className="flex gap-5 py-4">
         { data.length > 0
         ? data.map(f => (
-          <div key={f.id}>
+          <div key={f.id} className="flex bg-border p-5 rounded-md flex-col">
             <p>Project</p>
-            <p onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
-            <button onClick={() => setOptions(`${f.id}-f`)}>Options</button>
-            { options === `${f.id}-f` && <Options data={f} dataType={"folder"} role={"OWNER"}/> }
+            <div className="flex items-center justify-center">
+              <p onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
+              <div className="relative">
+                <button className="text-lg px-2" onClick={() => setOptions(`${f.id}-f`)}>⋮</button>
+                { options === `${f.id}-f` && <Options data={f} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
+              </div>
+            </div>
           </div>
           ))
         : <div>No projects start a new one</div>
         }
         </div> 
       : !Array.isArray(data) && <div>
-        <h1>Folder: {data.name}</h1>
+        <h1>{data.name}</h1>
         {data.folders.length === 0 && data.documents.length === 0
         ?
           <div>Start creating folders or documents</div>
-        : <div>
+        : <div className="flex gap-5 py-4">
             {data.folders.map(e => (
-            <div key={e.id}>
-              <p onClick={() => navigate(`/dashboard/folder/${e.id}`)}>Folder: {e.name}</p>
-              <button onClick={() => setOptions(`${e.id}-f`)}>Options</button>
-              { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"}/> }
+            <div key={e.id} className="flex bg-border p-5 rounded-md flex-col">
+              <p>Folder</p>
+              <div className="flex items-center justify-center">
+                <p onClick={() => navigate(`/dashboard/folder/${e.id}`)}>{e.name}</p>
+                <div className="relative">
+                  <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-f`)}>⋮</button>
+                  { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
+                </div>
+              </div>
             </div>
             ))}
             {data.documents.map(e => (
-            <div key={e.id}>
-              <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>Document: {e.name}</p>
-              { PRIVILED_ROLES.includes(e.users[0]?.role) && 
-                <div>
-                  <button onClick={() => setOptions(`${e.id}-d`)}>Options</button>
-                  { options === `${e.id}-d` && <Options data={e} dataType={"document"} role={e.users[0].role}/> }
-                </div>
-              }
+            <div key={e.id} className="flex bg-border p-5 rounded-md flex-col">
+              <p>Document</p>
+              <div className="flex items-center justify-center">
+                <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>{e.name}</p>
+                { PRIVILED_ROLES.includes(e.users[0]?.role) && 
+                  <div className="relative">
+                    <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-d`)}>⋮</button>
+                    { options === `${e.id}-d` && <Options data={e} dataType={"document"} role={e.users[0].role} setOptions={setOptions}/> }
+                  </div>
+                }
+              </div>
             </div>
             ))}
           </div>
         }
         </div>
       }
-    </div>
+    </>
   )
 }
