@@ -37,23 +37,23 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen -translate-y-15">
       <div>
         <h1>Sign Up</h1>
         <p>Enter your email, username and password to sign up</p>
-        <p>Already have a account? <Link to="/sign-in">Sign In</Link></p>
+        <p>Already have a account? <Link className="link" to="/sign-in">Sign In</Link></p>
       </div>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <p>{errors?.email}</p>
-        <input type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <p>{errors?.username}</p>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <p>{errors?.password}</p>
-        <input type="password" placeholder="Confirm Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        <p>{errors?.confirm}</p>
-        <p>{errors?.main}</p>
-        <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating Account..." : "Sign Up"}</button>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-1 mt-1">
+        <input className="p-1 pl-1" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <p className="text-red-700">{errors?.email}</p>
+        <input className="p-1 pl-1" type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <p className="text-red-700">{errors?.username}</p>
+        <input className="p-1 pl-1" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <p className="text-red-700">{errors?.password}</p>
+        <input className="p-1 pl-1" type="password" placeholder="Confirm Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        <p className="text-red-700">{errors?.confirm}</p>
+        <p className="text-red-700">{errors?.main}</p>
+        <button className="button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating Account..." : "Sign Up"}</button>
       </form>
     </div>
   );

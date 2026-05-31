@@ -17,7 +17,7 @@ export default function DocumentData() {
           { PRIVILED_ROLES.includes(d.role) && 
           <div>
             <button onClick={() => setOptions(`${d.id}-d`)}>Options</button>
-            { options === `${d.id}-d` && <Options data={d.document} dataType={"document"} role={d.role}/> }
+            { options === `${d.id}-d` && <Options data={d.document} dataType={"document"} role={d.role} setOptions={setOptions}/> }
           </div>
           }
         </div>

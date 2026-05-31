@@ -175,39 +175,43 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
     }
   }
 
-  if(!data) return <div>Loading...</div>
+  if(!data) return <div className="fixed inset-0 bg-black/30"></div>;
   return(
-    <div>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
       { addNew
         ? !viewSelected
-          ? <div>
+          ? <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex flex-col gap-2">
               <div>
-                <button onClick={() => viewRoles(false)}>Close</button>
-                <button onClick={() => setAddNew(false)}>Back</button>
-                <input type="text" placeholder="add new users" onChange={(e) => setInput(e.target.value)} value={input} />
-                <p>{errors?.main}</p>
-                <button onClick={handleSearch} disabled={isSubmitting}>{isSubmitting ? "Searching..." : "Search"}</button>
+                <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" onClick={() => viewRoles(false)}>&times;</button>
+                <button className=" flex items-center gap-1 absolute left-2 top-0 text-xl hover:text-text-h" onClick={() => setAddNew(false)}>˂ <span className="text-sm">Back</span></button>
+                <div className="py-1 flex gap-1">
+                  <input className="p-1 pl-1" type="text" placeholder="bowie_knife99" onChange={(e) => setInput(e.target.value)} value={input} />
+                  <button onClick={handleSearch} disabled={isSubmitting}>{isSubmitting ? "Searching..." : "Search"}</button>
+                </div>
+                <p className="text-red-700">{errors?.main}</p>
               </div>
-              <div>
+              <div className="flex flex-col">
                 {!searchedUsers ? <div>Start searching</div>
                 : searchedUsers.length > 0
-                ? searchedUsers.map(n => (
-                    <div key={n.id}>
-                      <input type="checkbox" onChange={(e) => handleSelect(e, n)} checked={selectedUsers.has(n.id)}  />
-                      <p>{n.username}</p>
-                    </div>
-                  ))
+                ? <ul className="flex flex-col gap-2">
+                    {searchedUsers.map(n => (
+                      <li key={n.id} className="flex justify-between items-center gap-2" >
+                        <input type="checkbox" onChange={(e) => handleSelect(e, n)} checked={selectedUsers.has(n.id)}  />
+                        <p>{n.username}</p>
+                      </li>
+                    ))}
+                </ul>
                 : <div>No users, search again</div>
               }
               </div>
               { selectedUsers.size > 0 && <button onClick={() => setViewSelected(true)}>View Selected</button> }
             </div>
-          : <div>
-              <button onClick={() => setViewSelected(false)}>Back</button>
+          : <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">
+              <button className=" flex items-center gap-1 absolute left-2 top-0 text-xl hover:text-text-h" onClick={() => setViewSelected(false)}>˂ <span className="text-sm">Back</span></button>
               <form onSubmit={handleSubmitNew}>
-              <ul>
+              <ul className="flex flex-col min-w-2xs">
                 {Array.from(selectedUsers.entries()).map(([key, value]) => (
-                  <li key={key}>
+                  <li key={key} className="flex justify-between items-center gap-2">
                     <p>{value.username}</p>
                     <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleChange(e, key, value)}>
                       {roles.map(r=> (
@@ -217,37 +221,40 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
                   </li>
                 ))}
               </ul>
-              <p>{errors?.main}</p>
+              <p className="text-red-700">{errors?.main}</p>
               <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Granting..." : "Grant Access"}</button>
               </form>
             </div> 
         : transfer
         ? <TransferOwernship docId={docId} viewTransfer={setTransfer}/>
         : data.size > 0
-          ? <div>
-            <button onClick={() => viewRoles(false)}>Close</button>
-            <button onClick={() => setAddNew(true)}>ADD USERS</button>
-            { userRole === Role.OWNER && <button onClick={() => setTransfer(true)}>Transfer Ownership</button>}
-            <form onSubmit={handleSubmitUpdate}>
-              <ul>
+          ? <div className="bg-bg px-5 py-6 pb-5  relative rounded-md flex gap-2 flex-col">
+            <div className="flex gap-3 border-b-1">
+              <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" onClick={() => viewRoles(false)}>&times;</button>
+              <button className="text-lg text-text-h hover:text-text" onClick={() => setAddNew(true)}>Add Users</button>
+              { userRole === Role.OWNER && <button className=" text-lg text-text-h hover:text-text" onClick={() => setTransfer(true)}>Transfer Ownership</button>}
+            </div>
+            <form onSubmit={handleSubmitUpdate} >
+              <ul className="flex flex-col gap-2">
               {Array.from(data.entries()).map(([key, value]) => (
-                <li key={key}>
+                <li key={key} className="flex justify-between items-center">
                   <p>{value.username}</p>
-                  <p>{value.role}</p>
-                  <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleEdit(e, key, value)}>
-                    {roles.map(r=> (
-                      <option value={r} key={r}>{r}</option>
-                    ))}  
-                  </select> 
-                  <button type="button" onClick={() => handleDelete(key)} disabled={isRemoving === key}>{isRemoving === key ? "Removing..." :"Remove"}</button>
+                  <div className="flex items-center gap-3">
+                    <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleEdit(e, key, value)}>
+                      {roles.map(r=> (
+                        <option value={r} key={r}>{r}</option>
+                      ))}  
+                    </select> 
+                    <button type="button" className="text-[32px] text-text-h bg-red-600 border rounded-full p-1 pt-0 hover:bg-transparent " onClick={() => handleDelete(key)} disabled={isRemoving === key}>&times;</button>
+                  </div>  
                 </li>
               ))}
               </ul>
-              <p>{errors?.main}</p>
+              <p className="text-red-700">{errors?.main}</p>
               {updatedUsers.size > 0 && <button type="submit" disabled={isSubmitting}>{ isSubmitting ? "Updating..." : "Update"}</button>}
             </form>
           </div> 
-        : <div>{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
+        : <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
       }
     </div>
   )

@@ -21,12 +21,11 @@ export default function CreateForms() {
   }
 
   return (
-    <div>
-   
+    <div className="fixed bottom-5 right-5 flex gap-3">
       {!dashboardPage && !documentPage &&
       <div>
         { !viewDoc
-          ? <button onClick={() => handleView("document")}>Create Document</button>
+          ? <button className="bg-blue-600 text-text-h p-2 rounded-md" onClick={() => handleView("document")}>+ Document</button>
           : <CreateForm folderId={folderId} handleClose={() => setViewDoc(false)} type="document"/>
         }
       </div>  
@@ -34,7 +33,7 @@ export default function CreateForms() {
      { !documentPage &&
       <div>
         { !viewFolder
-          ? <button onClick={() => handleView("folder")}>{dashboardPage ? "Create Project" :"Create Folder"}</button>
+          ? <button  className="bg-green-600 text-text-h p-2 rounded-md" onClick={() => handleView("folder")}>+ {dashboardPage ? "Project" :"Folder"}</button>
           : viewFolder && <CreateForm folderId={folderId} handleClose={() => setViewFolder(false)} type="folder"/>
         }
       </div>

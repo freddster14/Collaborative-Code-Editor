@@ -16,26 +16,29 @@ export default function Nav() {
     }
   }
 
-  return (
-    
+  return ( 
     <div>
       {location.pathname.includes('dashboard') ? 
-      <div>
+      <div className="nav">
         <h1 onClick={() => navigate('/dashboard')}>Dashboard</h1>
-        <p>Welcome to your dashboard</p>
-        <p>Username: {user?.username}</p>
-        <button onClick={handleLogout}>Log off</button>
+        <div className="flex gap-2 items-center">
+          <p className="font-bold p-3">{user?.username}</p>
+          <button className="button" onClick={handleLogout}>Log off</button>
+        </div>
       </div>
       : user ?
-      <div className="flex">
+      <div className="nav">
         <h1>CCE</h1>
         <p>Go to your dashboard</p>
-        <button><Link to='/dashboard'>Dashboard</Link></button>
+        <button className="button"><Link to='/dashboard'>Dashboard</Link></button>
       </div>
-       : <div>
+       : <div className="nav">
         <h1>CCE</h1>
-        <button><Link to='/sign-in'>Sign In</Link></button>
-        <button><Link to='/sign-up'>Sign Up</Link></button>
+        <div className="flex gap-2">
+          <button className="button"><Link to='/sign-in'>Sign In</Link></button>
+          <button className="button"><Link to='/sign-up'>Sign Up</Link></button>
+        </div>
+        
        </div>
       }
       

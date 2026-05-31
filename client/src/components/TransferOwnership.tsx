@@ -44,18 +44,24 @@ export default function TransferOwernship({docId, viewTransfer}: {docId:number, 
   if (!admins) return <div>Loading...</div>
 
   return(
-    <div>
+    <div className="bg-bg px-5 pb-5 pt-3  relative rounded-md flex gap-2 flex-col">
+      <p className="text-text-h text-lg">Tranfer Ownership to Admin</p>
     {admins.length > 0
-      ? admins.map(a => (
-      <div key={a.id}>
-        <p>{a.user.username}</p>
-        <p>{a.role}</p>
-        <button onClick={() => transfer(a.id)} disabled={isTransferring}>{isTransferring ? "Tranferring..." : "Transfer Ownership"}</button>
-      </div>
-      ))
+      ? <ul className="flex flex-col gap-2 min-w-2xs">
+        {admins.map(a => (
+          <li key={a.id} className="flex justify-between items-center ">
+            <p>{a.user.username}</p>
+            <div className="flex gap-2">
+              <p>{a.role}</p>
+              <button onClick={() => transfer(a.id)} disabled={isTransferring}>{isTransferring ? "Tranferring..." : "Transfer"}</button>
+            </div>
+            
+          </li>
+        ))}
+      </ul> 
       : <p>No Admins to transfer, <button onClick={() => viewTransfer(false)}>promote</button></p>
     }
-    <p>{errors?.main}</p>
+    <p className="text-red-700">{errors?.main}</p>
     <button onClick={() => viewTransfer(false)}>Cancel</button>
     </div>
   )

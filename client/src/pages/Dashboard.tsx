@@ -7,8 +7,8 @@ export default function Dashboard() {
   if (!user) return <Navigate to='/'/>
   return (
     <>
-      <CreateForms />
       <Sidebar />
+      <CreateForms />
       <Outlet />
     </>
   );
