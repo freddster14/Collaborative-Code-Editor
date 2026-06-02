@@ -568,6 +568,11 @@ export const generateWebsocketToken = async (req: Request, res:Response, next: N
       },
       select: {
         role: true,
+        document: {
+          select: {
+            name: true
+          }
+        }
       }
     })
 
@@ -580,7 +585,7 @@ export const generateWebsocketToken = async (req: Request, res:Response, next: N
       { expiresIn: 60 * 15 } // 15min
     )
 
-    res.status(201).json({ token: wsToken, role: authorized.role})
+    res.status(201).json({ token: wsToken, role: authorized.role, docName: authorized.document.name})
   } catch (error) {
     next(error)    
   }

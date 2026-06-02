@@ -16,10 +16,10 @@ export default function FolderData() {
       ? <div className="flex gap-5 py-4">
         { data.length > 0
         ? data.map(f => (
-          <div key={f.id} className="flex bg-border p-5 rounded-md flex-col">
+          <div key={f.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
             <p>Project</p>
             <div className="flex items-center justify-center">
-              <p onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
+              <p className="cursor-pointer" onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
               <div className="relative">
                 <button className="text-lg px-2" onClick={() => setOptions(`${f.id}-f`)}>⋮</button>
                 { options === `${f.id}-f` && <Options data={f} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
@@ -37,10 +37,10 @@ export default function FolderData() {
           <div>Start creating folders or documents</div>
         : <div className="flex gap-5 py-4">
             {data.folders.map(e => (
-            <div key={e.id} className="flex bg-border p-5 rounded-md flex-col">
+            <div key={e.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
               <p>Folder</p>
               <div className="flex items-center justify-center">
-                <p onClick={() => navigate(`/dashboard/folder/${e.id}`)}>{e.name}</p>
+                <p className="cursor-pointer" onClick={() => navigate(`/dashboard/folder/${e.id}`)}>{e.name}</p>
                 <div className="relative">
                   <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-f`)}>⋮</button>
                   { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
@@ -49,10 +49,10 @@ export default function FolderData() {
             </div>
             ))}
             {data.documents.map(e => (
-            <div key={e.id} className="flex bg-border p-5 rounded-md flex-col">
+            <div key={e.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
               <p>Document</p>
               <div className="flex items-center justify-center">
-                <p onClick={() => navigate(`/dashboard/edit/${e.id}`)}>{e.name}</p>
+                <p className="cursor-pointer" onClick={() => navigate(`/dashboard/edit/${e.id}`)}>{e.name}</p>
                 { PRIVILED_ROLES.includes(e.users[0]?.role) && 
                   <div className="relative">
                     <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-d`)}>⋮</button>

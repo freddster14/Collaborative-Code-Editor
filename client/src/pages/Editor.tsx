@@ -7,13 +7,12 @@ import { useNavigate, useParams, useRouteLoaderData } from 'react-router-dom';
 import { getRequest } from '../api/api-requests';
 import generateDarkColor from '../utils/generateColor';
 import type { editor } from 'monaco-editor';
-import { Role } from '@cce/shared-types';
+import { Role, type RoleType } from '@cce/shared-types';
 
 export default function Binding() {
   const user = useRouteLoaderData('user');
   const ydoc = useMemo(() => new Y.Doc(), [])
-  const [token, setToken] = useState(null)
-  const [role, setRole] = useState(null)
+  const [payload, setPayload] = useState<{token: string, role: RoleType, docName: string} | null>(null)
   const [editor , setEditor] = useState<null | editor.IStandaloneCodeEditor>(null);
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const binding = useRef<MonacoBinding | null>(null)
@@ -26,8 +25,7 @@ export default function Binding() {
     async function getToken() {
       try {
         const res = await getRequest(`/document/${docId}`)
-        setToken(res.token)
-        setRole(res.role)
+        setPayload(res)
       } catch (error) {
         console.error(error)
         navigate(-1)
@@ -37,7 +35,7 @@ export default function Binding() {
   }, [])
   // lifetime for ydoc and provider
   useEffect(() => {
-    if (!token) return;
+    if (!payload) return;
     const provider = new HocuspocusProvider({
       url: import.meta.env.VITE_HOCUSPOCUS_URL,
       name: `document-${docId}`,
@@ -48,7 +46,7 @@ export default function Binding() {
       onSynced: () => {
         setLoading(false)
       },
-      token
+      token: payload.token
     });
     provider.awareness?.on("change", (c:{added:number[], removed:number[]}) => {
       const added = c.added;
@@ -95,7 +93,7 @@ export default function Binding() {
       const styleTags = document.querySelectorAll('[id^="cursor-"]')
       styleTags.forEach(e => { e.remove() });
     }
-  }, [ydoc, token])
+  }, [ydoc, payload])
 
 
   // lifetime for editor binding
@@ -113,15 +111,21 @@ export default function Binding() {
   }, [ydoc, provider, editor])
 
   return (
+    <>
+    <div>
+      <h1>{payload?.docName}</h1>
+      <p>{payload?.role}</p>
+    </div>
     <Editor
       height="90vh"
       defaultLanguage='javascript'
       theme='vs-dark'
       onMount={editor => { setEditor(editor)}}
       options={{
-        readOnly: role === Role.VIEW || loading,
-        domReadOnly: role === Role.VIEW || loading
+        readOnly: payload?.role === Role.VIEW || loading,
+        domReadOnly: payload?.role === Role.VIEW || loading
       }}
     />
+    </>
   )
 }
