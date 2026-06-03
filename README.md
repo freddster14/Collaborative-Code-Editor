@@ -1,5 +1,11 @@
 # Collaborative-Code-Editor
 A collaborative code editor that enables real-time multi-editing with conflict-free synchronization.
+👉 [View deployed app](https://collaborative-code-editor-iota-seven.vercel.app/)
+
+<div align="center">
+  <img src="./client/public/cce.png" width="45%" />
+  <img src="./client/public/cce-folder.png" width="45%" />
+</div>
 
 ## WHY?
 Code reviews are needed when working in projects. This enables teams to review and edit code simultaneosly, in the same file, in real time. Reducing the friction of async code review.
@@ -8,6 +14,9 @@ Code reviews are needed when working in projects. This enables teams to review a
 Websocket server (HocusPocus) binds with the editor to manage all changes on the file. CRDT's strong eventual consistency algorithm ensures the file changes converge with all local users. Redis solves cross-instance synchronization and persists data on server restarts. PostgreSQL acts as a source of truth.
 
 ## Technical Highlights
+
+**Blog Post**
+👉 [View Blog](https://dev.to/freddster14/centralized-vs-decentralized-why-modern-collaborative-tools-choose-crdts-132j)
 
 **CI/CD**
 - 60+ integration test covering authentication, CRUD, and edgecases
@@ -19,8 +28,8 @@ Websocket server (HocusPocus) binds with the editor to manage all changes on the
 - Manage shared documents
 
 **Real-Time Collabarative**
-- Changes are stored in memory, later stored in storage
-- Conflict free with Yjs (CRDT)
+- Redis in-mermory, reduce document latency and able to scale horizontally
+- Conflict-free data with Yjs (CRDT)
 - Live users' cursor position with username
 
 ## Installation
