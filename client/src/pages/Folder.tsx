@@ -13,7 +13,7 @@ export default function FolderData() {
   return (
     <>
       { Number.isNaN(folderId) && Array.isArray(data)
-      ? <div className="flex gap-5 py-4">
+      ? <div className="flex gap-5 p-4">
         { data.length > 0
         ? data.map(f => (
           <div key={f.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
@@ -35,7 +35,7 @@ export default function FolderData() {
         {data.folders.length === 0 && data.documents.length === 0
         ?
           <div>Start creating folders or documents</div>
-        : <div className="flex gap-5 py-4">
+        : <div className="flex gap-5 p-4">
             {data.folders.map(e => (
             <div key={e.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
               <p>Folder</p>
