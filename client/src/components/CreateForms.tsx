@@ -8,7 +8,7 @@ export default function CreateForms() {
   const [viewFolder, setViewFolder] = useState(false);
   const dashboardPage = Number.isNaN(folderId);
   const location = useLocation();
-  const documentPage  = location.pathname.includes('edit');
+  const documentPage  = location.pathname.includes('document') || location.pathname.includes('edit');
   
   const handleView = (type:string) => {
     if (type === "document") {
