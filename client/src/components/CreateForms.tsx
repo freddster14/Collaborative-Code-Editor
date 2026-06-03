@@ -8,7 +8,7 @@ export default function CreateForms() {
   const [viewFolder, setViewFolder] = useState(false);
   const dashboardPage = Number.isNaN(folderId);
   const location = useLocation();
-  const documentPage  = location.pathname.includes('document');
+  const documentPage  = location.pathname.includes('document') || location.pathname.includes('edit');
   
   const handleView = (type:string) => {
     if (type === "document") {
@@ -21,7 +21,7 @@ export default function CreateForms() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 flex gap-3">
+    <div className="absolute bottom-5 right-5 flex gap-3">
       {!dashboardPage && !documentPage &&
       <div>
         { !viewDoc

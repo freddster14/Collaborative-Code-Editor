@@ -42,6 +42,7 @@
 #root {
   width: 1126px;
   max-width: 100%;
+  position: relative;
   padding: 0 1rem;
   margin: 0 auto;
   text-align: center;

@@ -109,15 +109,15 @@ export default function Binding() {
       binding.current = null;
     }
   }, [ydoc, provider, editor])
-
+  
   return (
     <>
-    <div>
+    <div className="flex justify-between items-center p-2">
       <h1>{payload?.docName}</h1>
       <p>{payload?.role}</p>
     </div>
     <Editor
-      height="90vh"
+      height="80vh"
       defaultLanguage='javascript'
       theme='vs-dark'
       onMount={editor => { setEditor(editor)}}
