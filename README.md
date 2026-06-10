@@ -11,7 +11,7 @@ A collaborative code editor that enables real-time multi-editing with conflict-f
 Code reviews are needed when working in projects. This enables teams to review and edit code simultaneosly, in the same file, in real time. Reducing the friction of async code review.
 
 ## HOW?
-Websocket server (HocusPocus) binds with the editor to manage all changes on the file. CRDT's strong eventual consistency algorithm ensures the file changes converge with all local users. Redis solves cross-instance synchronization and persists data on server restarts. PostgreSQL acts as a source of truth.
+Websocket server (HocusPocus) binds with the editor to manage all changes on the file. CRDT's strong eventual consistency algorithm ensures the file changes converge with all local users. Redis as persistence and fast-rehydration layer, single instance, Yjs CRDT for client convergence. PostgreSQL acts as a source of truth.
 
 ## Technical Highlights
 
@@ -28,7 +28,7 @@ Websocket server (HocusPocus) binds with the editor to manage all changes on the
 - Manage shared documents
 
 **Real-Time Collabarative**
-- Redis in-mermory, reduce document latency and able to scale horizontally
+- WebSocket server for live-data and Redis as my persistent storage
 - Conflict-free data with Yjs (CRDT)
 - Live users' cursor position with username
 
