@@ -39,12 +39,12 @@ export default function CreateForm({ folderId, handleClose, type }: { folderId: 
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
-      <form onSubmit={handleSubmit} className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">
-        <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" type="button" onClick={handleClose}>&times;</button>
-        <input className="p-1 pl-1" type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value) } />
-        <p>{error?.main}</p>
-        <button className="button" type="submit" disabled={isSubmitting} >{isSubmitting ? "Creating..." : "Create"}</button>
+    <div className="modal-overlay">
+      <form onSubmit={handleSubmit} className="modal-panel w-[340px] flex flex-col gap-3">
+        <button className="modal-close" type="button" onClick={handleClose}>&times;</button>
+        <input className="input" type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value) } />
+        <p className="text-red-500 text-xs">{error?.main}</p>
+        <button className="btn-primary w-full" type="submit" disabled={isSubmitting} >{isSubmitting ? "Creating..." : "Create"}</button>
       </form>
     </div>
   )

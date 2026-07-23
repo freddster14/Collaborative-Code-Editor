@@ -25,15 +25,15 @@ export default function CreateForms() {
       {!dashboardPage && !documentPage &&
       <div>
         { !viewDoc
-          ? <button className="bg-blue-600 text-text-h p-2 rounded-md" onClick={() => handleView("document")}>+ Document</button>
+          ? <button className="btn-primary fab-blue" onClick={() => handleView("document")}>+ Document</button>
           : <CreateForm folderId={folderId} handleClose={() => setViewDoc(false)} type="document"/>
         }
-      </div>  
+      </div>
       }
      { !documentPage &&
       <div>
         { !viewFolder
-          ? <button  className="bg-green-600 text-text-h p-2 rounded-md" onClick={() => handleView("folder")}>+ {dashboardPage ? "Project" :"Folder"}</button>
+          ? <button  className="btn-success fab-green" onClick={() => handleView("folder")}>+ {dashboardPage ? "Project" :"Folder"}</button>
           : viewFolder && <CreateForm folderId={folderId} handleClose={() => setViewFolder(false)} type="folder"/>
         }
       </div>

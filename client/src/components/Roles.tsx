@@ -3,6 +3,7 @@ import { bodyRequest, getRequest } from "../api/api-requests";
 import { AVAILABLE_ROLES } from "../utils/contants";
 import { ApiError, Role, type ErrorType, type RoleType, type UserRole } from "@cce/shared-types";
 import TransferOwernship from "./TransferOwnership";
+import { generateColorFromString } from "../utils/generateColor";
 
 export default function Roles({docId, viewRoles, userRole}: {docId:number, viewRoles: (arg0:boolean) => void, userRole:string}) {
   const [data, setData] = useState<null | Map<number, UserRole>>(null); // Change to Map object to scale on change and deletion
@@ -175,86 +176,93 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
     }
   }
 
-  if(!data) return <div className="fixed inset-0 bg-black/30"></div>;
+  if(!data) return <div className="modal-overlay"></div>;
   return(
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+    <div className="modal-overlay">
       { addNew
         ? !viewSelected
-          ? <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex flex-col gap-2">
+          ? <div className="modal-panel w-[400px] flex flex-col gap-3">
               <div>
-                <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" onClick={() => viewRoles(false)}>&times;</button>
-                <button className=" flex items-center gap-1 absolute left-2 top-0 text-xl hover:text-text-h" onClick={() => setAddNew(false)}>˂ <span className="text-sm">Back</span></button>
-                <div className="py-1 flex gap-1">
-                  <input className="p-1 pl-1" type="text" placeholder="bowie_knife99" onChange={(e) => setInput(e.target.value)} value={input} />
-                  <button onClick={handleSearch} disabled={isSubmitting}>{isSubmitting ? "Searching..." : "Search"}</button>
+                <button className="modal-close" onClick={() => viewRoles(false)}>&times;</button>
+                <button className="flex items-center gap-1 text-text-subtle hover:text-text-h text-sm mb-3" onClick={() => setAddNew(false)}>˂ <span>Back</span></button>
+                <div className="flex gap-2">
+                  <input className="input" type="text" placeholder="bowie_knife99" onChange={(e) => setInput(e.target.value)} value={input} />
+                  <button className="btn shrink-0" onClick={handleSearch} disabled={isSubmitting}>{isSubmitting ? "Searching..." : "Search"}</button>
                 </div>
-                <p className="text-red-700">{errors?.main}</p>
+                <p className="text-red-500 text-xs mt-1">{errors?.main}</p>
               </div>
               <div className="flex flex-col">
-                {!searchedUsers ? <div>Start searching</div>
+                {!searchedUsers ? <div className="text-text-subtle text-sm text-center py-4">Start searching</div>
                 : searchedUsers.length > 0
                 ? <ul className="flex flex-col gap-2">
                     {searchedUsers.map(n => (
-                      <li key={n.id} className="flex justify-between items-center gap-2" >
+                      <li key={n.id} className="flex items-center gap-3 bg-input border border-border rounded-[9px] px-3 py-2" >
                         <input type="checkbox" onChange={(e) => handleSelect(e, n)} checked={selectedUsers.has(n.id)}  />
-                        <p>{n.username}</p>
+                        <div className="avatar-sm" style={{ background: generateColorFromString(n.username) }}>{n.username[0]?.toUpperCase()}</div>
+                        <p className="text-text-strong text-sm">{n.username}</p>
                       </li>
                     ))}
                 </ul>
-                : <div>No users, search again</div>
+                : <div className="text-text-subtle text-sm text-center py-4">No users, search again</div>
               }
               </div>
-              { selectedUsers.size > 0 && <button onClick={() => setViewSelected(true)}>View Selected</button> }
+              { selectedUsers.size > 0 && <button className="btn-primary" onClick={() => setViewSelected(true)}>View Selected</button> }
             </div>
-          : <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">
-              <button className=" flex items-center gap-1 absolute left-2 top-0 text-xl hover:text-text-h" onClick={() => setViewSelected(false)}>˂ <span className="text-sm">Back</span></button>
-              <form onSubmit={handleSubmitNew}>
-              <ul className="flex flex-col min-w-2xs">
+          : <div className="modal-panel w-[400px] flex flex-col gap-3">
+              <button className="flex items-center gap-1 text-text-subtle hover:text-text-h text-sm mb-1" onClick={() => setViewSelected(false)}>˂ <span>Back</span></button>
+              <form onSubmit={handleSubmitNew} className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-2 min-w-2xs">
                 {Array.from(selectedUsers.entries()).map(([key, value]) => (
-                  <li key={key} className="flex justify-between items-center gap-2">
-                    <p>{value.username}</p>
-                    <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleChange(e, key, value)}>
+                  <li key={key} className="flex justify-between items-center gap-2 bg-input border border-border rounded-[9px] px-3 py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="avatar-sm" style={{ background: generateColorFromString(value.username) }}>{value.username[0]?.toUpperCase()}</div>
+                      <p className="text-text-strong text-sm">{value.username}</p>
+                    </div>
+                    <select className="input-select" name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleChange(e, key, value)}>
                       {roles.map(r=> (
                         <option value={r} key={r}>{r}</option>
-                      ))}  
-                    </select> 
+                      ))}
+                    </select>
                   </li>
                 ))}
               </ul>
-              <p className="text-red-700">{errors?.main}</p>
-              <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Granting..." : "Grant Access"}</button>
+              <p className="text-red-500 text-xs">{errors?.main}</p>
+              <button className="btn-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? "Granting..." : "Grant Access"}</button>
               </form>
-            </div> 
+            </div>
         : transfer
         ? <TransferOwernship docId={docId} viewTransfer={setTransfer}/>
         : data.size > 0
-          ? <div className="bg-bg px-5 py-6 pb-5  relative rounded-md flex gap-2 flex-col">
-            <div className="flex gap-3 border-b-1">
-              <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" onClick={() => viewRoles(false)}>&times;</button>
-              <button className="text-lg text-text-h hover:text-text" onClick={() => setAddNew(true)}>Add Users</button>
-              { userRole === Role.OWNER && <button className=" text-lg text-text-h hover:text-text" onClick={() => setTransfer(true)}>Transfer Ownership</button>}
+          ? <div className="modal-panel w-[400px] flex flex-col gap-4">
+            <div className="flex items-center gap-4 border-b border-border pb-3">
+              <button className="modal-close" onClick={() => viewRoles(false)}>&times;</button>
+              <button className="text-[15px] font-bold text-text-h" onClick={() => setAddNew(true)}>Add Users</button>
+              { userRole === Role.OWNER && <button className="text-[15px] text-text-subtle hover:text-text-h" onClick={() => setTransfer(true)}>Transfer Ownership</button>}
             </div>
-            <form onSubmit={handleSubmitUpdate} >
-              <ul className="flex flex-col gap-2">
+            <form onSubmit={handleSubmitUpdate} className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-2.5">
               {Array.from(data.entries()).map(([key, value]) => (
-                <li key={key} className="flex justify-between items-center">
-                  <p>{value.username}</p>
-                  <div className="flex items-center gap-3">
-                    <select name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleEdit(e, key, value)}>
+                <li key={key} className="flex justify-between items-center bg-input border border-border rounded-[9px] px-3 py-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="avatar-sm" style={{ background: generateColorFromString(value.username) }}>{value.username[0]?.toUpperCase()}</div>
+                    <p className="text-text-strong text-sm">{value.username}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select className="input-select" name="roles" id="roles" defaultValue={value.role} onChange={(e) => handleEdit(e, key, value)}>
                       {roles.map(r=> (
                         <option value={r} key={r}>{r}</option>
-                      ))}  
-                    </select> 
-                    <button type="button" className="text-[32px] text-text-h bg-red-600 border rounded-full p-1 pt-0 hover:bg-transparent " onClick={() => handleDelete(key)} disabled={isRemoving === key}>&times;</button>
-                  </div>  
+                      ))}
+                    </select>
+                    <button type="button" className="avatar-remove" onClick={() => handleDelete(key)} disabled={isRemoving === key}>&times;</button>
+                  </div>
                 </li>
               ))}
               </ul>
-              <p className="text-red-700">{errors?.main}</p>
-              {updatedUsers.size > 0 && <button type="submit" disabled={isSubmitting}>{ isSubmitting ? "Updating..." : "Update"}</button>}
+              <p className="text-red-500 text-xs">{errors?.main}</p>
+              {updatedUsers.size > 0 && <button className="btn-primary" type="submit" disabled={isSubmitting}>{ isSubmitting ? "Updating..." : "Update"}</button>}
             </form>
-          </div> 
-        : <div className="bg-bg px-5 py-7 pb-5  relative rounded-md flex gap-2">{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
+          </div>
+        : <div className="modal-panel w-[400px] flex items-center gap-2 text-text-subtle text-sm">{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button className="link" onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
       }
     </div>
   )

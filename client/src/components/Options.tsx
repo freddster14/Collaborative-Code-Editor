@@ -65,15 +65,15 @@ export default function Options({ data, dataType, role, setOptions }: {data:Fold
   return (
     <>
     {!viewRoles && !viewEdit &&
-       <div className="absolute bg-bg border-2 rounded-md top-0" ref={optionsRef}>
-       <button className="button w-full !rounded-none" onClick={() => openEdit(data.id, data.name, type)}>Edit</button>
-       { type !== 'folder' && <button className="button w-full !rounded-none" onClick={() => openRoles(data.id)}>Roles</button> }
-       { role === Role.OWNER && <button className="button w-full !rounded-none" onClick={() => handleDelete(data.id, type)}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button> }
+       <div className="menu-panel absolute right-0 top-7 z-10 min-w-[130px]" ref={optionsRef}>
+       <button className="menu-item" onClick={() => openEdit(data.id, data.name, type)}>Edit</button>
+       { type !== 'folder' && <button className="menu-item" onClick={() => openRoles(data.id)}>Roles</button> }
+       { role === Role.OWNER && <button className="menu-item !text-red-500" onClick={() => handleDelete(data.id, type)}disabled={isDeleting}>{isDeleting ? "Deleting...": "Delete"}</button> }
      </div>
     }
       { viewRoles && id && <Roles key={id} docId={id} viewRoles={setViewRoles} userRole={role}/>}
       { viewEdit && id && <EditForm key={id} docId={id} value={input} type={type} viewEdit={setViewEdit}/> }
-      <p className="text-red-700">{errors?.main}</p>
+      <p className="text-red-500 text-xs">{errors?.main}</p>
     </>
   )
 }
