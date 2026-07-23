@@ -32,14 +32,14 @@ export default function EditForm({ docId, value, type, viewEdit }: { docId:numbe
   }
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30">
-      <form className="bg-bg px-5 pt-7 pb-6 relative rounded-md flex gap-2" onSubmit={handleEdit}>
-        <button className="absolute right-1 -top-2 text-3xl hover:text-text-h" type="button" onClick={() => viewEdit(false)}>&times;</button>
-        <input type="text" placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
-        <p className="text-red-700">{error?.main}</p>
-        <button className="button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Editing..." : "Edit"}</button>
+    <div className="modal-overlay">
+      <form className="modal-panel w-[340px] flex flex-col gap-3" onSubmit={handleEdit}>
+        <button className="modal-close" type="button" onClick={() => viewEdit(false)}>&times;</button>
+        <input className="input" type="text" placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
+        <p className="text-red-500 text-xs">{error?.main}</p>
+        <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>{isSubmitting ? "Editing..." : "Edit"}</button>
       </form>
     </div>
-   
+
   )
 }

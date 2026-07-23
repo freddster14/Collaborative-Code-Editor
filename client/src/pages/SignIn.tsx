@@ -45,20 +45,23 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen -translate-y-15">
-      <div>
-      <h1>Sign In</h1>
-      <p>Enter your email or username and password to sign in</p>
-      <p>Don't have a account? <Link className="link" to="/sign-up">Create Account</Link></p>
+    <div className="flex flex-col items-center justify-center min-h-screen py-16 animate-fade-up">
+      <Link to="/" className="!m-0 !text-[22px] font-bold text-text-h mb-7">CCE</Link>
+      <div className="w-[380px] bg-panel border border-border rounded-2xl px-8 py-9">
+        <h1 className="!m-0 !mb-2 !text-[26px]">Sign In</h1>
+        <p className="text-text-subtle text-sm mb-6">Enter your email or username and password to sign in</p>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
+          <label className="input-label">Email or Username</label>
+          <input className="input mb-3.5" type="text" placeholder="you@example.com or username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.identifier}</p>
+          <label className="input-label">Password</label>
+          <input className="input mb-3.5" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.password}</p>
+          <p className="text-red-500 text-xs">{errors?.main}</p>
+          <button className="btn-primary w-full mt-1.5" type="submit" disabled={isSubmitting}>{isSubmitting ? "Signing in..." : "Sign In"}</button>
+        </form>
+        <p className="text-center text-text-subtle text-[13px] mt-4.5">Don't have an account? <Link className="link" to="/sign-up">Create Account</Link></p>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-1 mt-1">
-        <input className="p-1 pl-1" type="identifier" placeholder="Email or Username" value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
-        <p className="text-red-700">{errors?.identifier}</p>
-        <input className="p-1 pl-1" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <p className="text-red-700">{errors?.password}</p>
-        <p className="text-red-700">{errors?.main}</p>
-        <button className="button" type="submit"  disabled={isSubmitting}>{isSubmitting? "Signing in..." : "Sign In"}</button>
-      </form>
     </div>
   );
 }

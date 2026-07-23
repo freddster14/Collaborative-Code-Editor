@@ -13,49 +13,49 @@ export default function FolderData() {
   return (
     <>
       { Number.isNaN(folderId) && Array.isArray(data)
-      ? <div className="flex gap-5 p-4">
+      ? <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 py-2">
         { data.length > 0
         ? data.map(f => (
-          <div key={f.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
-            <p>Project</p>
-            <div className="flex items-center justify-center">
-              <p className="cursor-pointer" onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
+          <div key={f.id} className="card relative">
+            <div className="label-green text-[11px] tracking-[.06em] font-bold uppercase mb-2.5">Project</div>
+            <div className="flex items-center justify-between">
+              <p className="text-text-strong text-[15px] cursor-pointer" onClick={() => navigate(`folder/${f.id}`)}>{f.name}</p>
               <div className="relative">
-                <button className="text-lg px-2" onClick={() => setOptions(`${f.id}-f`)}>⋮</button>
+                <button className="text-lg px-1 text-text-subtle hover:text-text-h" onClick={() => setOptions(`${f.id}-f`)}>⋮</button>
                 { options === `${f.id}-f` && <Options data={f} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
               </div>
             </div>
           </div>
           ))
-        : <div>No projects start a new one</div>
+        : <div className="text-text-subtle text-sm">No projects start a new one</div>
         }
-        </div> 
+        </div>
       : !Array.isArray(data) && <div>
-        <h1>{data.name}</h1>
+        <h2 className="text-center !text-[20px] my-5">{data.name}</h2>
         {data.folders.length === 0 && data.documents.length === 0
         ?
-          <div>Start creating folders or documents</div>
-        : <div className="flex gap-5 p-4">
+          <div className="text-text-subtle text-sm text-center py-6">Start creating folders or documents</div>
+        : <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 py-2">
             {data.folders.map(e => (
-            <div key={e.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
-              <p>Folder</p>
-              <div className="flex items-center justify-center">
-                <p className="cursor-pointer" onClick={() => navigate(`/dashboard/folder/${e.id}`)}>{e.name}</p>
+            <div key={e.id} className="card relative">
+              <div className="label-green text-[11px] tracking-[.06em] font-bold uppercase mb-2.5">Folder</div>
+              <div className="flex items-center justify-between">
+                <p className="text-text-strong text-[15px] cursor-pointer" onClick={() => navigate(`/dashboard/folder/${e.id}`)}>{e.name}</p>
                 <div className="relative">
-                  <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-f`)}>⋮</button>
+                  <button className="text-lg px-1 text-text-subtle hover:text-text-h" onClick={() => setOptions(`${e.id}-f`)}>⋮</button>
                   { options === `${e.id}-f` && <Options data={e} dataType={"folder"} role={"OWNER"} setOptions={setOptions}/> }
                 </div>
               </div>
             </div>
             ))}
             {data.documents.map(e => (
-            <div key={e.id} className="flex bg-border border-1 p-5 rounded-md flex-col hover:bg-bg transition-all duration-300">
-              <p>Document</p>
-              <div className="flex items-center justify-center">
-                <p className="cursor-pointer" onClick={() => navigate(`/dashboard/edit/${e.id}`)}>{e.name}</p>
-                { PRIVILED_ROLES.includes(e.users[0]?.role) && 
+            <div key={e.id} className="card relative">
+              <div className="label-blue text-[11px] tracking-[.06em] font-bold uppercase mb-2.5">Document</div>
+              <div className="flex items-center justify-between">
+                <p className="text-text-strong text-[15px] cursor-pointer" onClick={() => navigate(`/dashboard/edit/${e.id}`)}>{e.name}</p>
+                { PRIVILED_ROLES.includes(e.users[0]?.role) &&
                   <div className="relative">
-                    <button className="text-lg px-2" onClick={() => setOptions(`${e.id}-d`)}>⋮</button>
+                    <button className="text-lg px-1 text-text-subtle hover:text-text-h" onClick={() => setOptions(`${e.id}-d`)}>⋮</button>
                     { options === `${e.id}-d` && <Options data={e} dataType={"document"} role={e.users[0].role} setOptions={setOptions}/> }
                   </div>
                 }

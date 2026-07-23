@@ -17,6 +17,7 @@ export default function Binding() {
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const binding = useRef<MonacoBinding | null>(null)
   const [loading, setLoading] = useState(true)
+  const [collaborators, setCollaborators] = useState<Map<number, {name:string, color:string}>>(new Map())
   const { docId } = useParams();
   const navigate = useNavigate()
 
@@ -78,8 +79,16 @@ export default function Binding() {
       for(let i = 0; i < removed.length; i++) {
         document.getElementById(`cursor-${removed[i]}`)?.remove()
       }
+
+      if(states) {
+        setCollaborators(new Map(
+          Array.from(states.entries())
+            .filter(([, v]) => v?.user)
+            .map(([clientId, v]) => [clientId, v.user])
+        ))
+      }
     })
-   
+
     provider.awareness?.setLocalStateField('user', {
       name: user.username,
       color: generateDarkColor(),
@@ -92,6 +101,7 @@ export default function Binding() {
       // Remove style tags
       const styleTags = document.querySelectorAll('[id^="cursor-"]')
       styleTags.forEach(e => { e.remove() });
+      setCollaborators(new Map())
     }
   }, [ydoc, payload])
 
@@ -111,21 +121,39 @@ export default function Binding() {
   }, [ydoc, provider, editor])
   
   return (
-    <>
-    <div className="flex justify-between items-center p-2">
-      <h1>{payload?.docName}</h1>
-      <p>{payload?.role}</p>
+    <div className="max-w-[1200px] w-full mx-auto px-6 box-border animate-fade-up">
+      <div className="flex justify-between items-center py-5">
+        <div className="flex items-center gap-3">
+          <h1 className="!m-0 !text-[20px]">{payload?.docName}</h1>
+          <span className="pill-role">{payload?.role === Role.OWNER ? "Owner" : payload?.role}</span>
+        </div>
+        <div className="flex items-center -space-x-2">
+          {Array.from(collaborators.entries()).map(([clientId, u]) => (
+            <div key={clientId} className="avatar" style={{ background: u.color }} title={u.name}>
+              {u.name?.[0]?.toUpperCase()}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-input border border-border rounded-xl overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-panel border-b border-border">
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: '#ff5f57' }}></span>
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: '#febc2e' }}></span>
+          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: '#28c840' }}></span>
+          <span className="text-text-subtle text-xs ml-2.5">{payload?.docName}</span>
+        </div>
+        <Editor
+          height="75vh"
+          defaultLanguage='javascript'
+          theme='vs-dark'
+          onMount={editor => { setEditor(editor)}}
+          options={{
+            readOnly: payload?.role === Role.VIEW || loading,
+            domReadOnly: payload?.role === Role.VIEW || loading
+          }}
+        />
+      </div>
     </div>
-    <Editor
-      height="80vh"
-      defaultLanguage='javascript'
-      theme='vs-dark'
-      onMount={editor => { setEditor(editor)}}
-      options={{
-        readOnly: payload?.role === Role.VIEW || loading,
-        domReadOnly: payload?.role === Role.VIEW || loading
-      }}
-    />
-    </>
   )
 }

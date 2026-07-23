@@ -37,24 +37,29 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen -translate-y-15">
-      <div>
-        <h1>Sign Up</h1>
-        <p>Enter your email, username and password to sign up</p>
-        <p>Already have a account? <Link className="link" to="/sign-in">Sign In</Link></p>
+    <div className="flex flex-col items-center justify-center min-h-screen py-16 animate-fade-up">
+      <Link to="/" className="!m-0 !text-[22px] font-bold text-text-h mb-7">CCE</Link>
+      <div className="w-[380px] bg-panel border border-border rounded-2xl px-8 py-9">
+        <h1 className="!m-0 !mb-2 !text-[26px]">Sign Up</h1>
+        <p className="text-text-subtle text-sm mb-6">Enter your email, username and password to sign up</p>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
+          <label className="input-label">Email</label>
+          <input className="input mb-3.5" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.email}</p>
+          <label className="input-label">Username</label>
+          <input className="input mb-3.5" type="text" placeholder="bowie_knife99" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.username}</p>
+          <label className="input-label">Password</label>
+          <input className="input mb-3.5" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.password}</p>
+          <label className="input-label">Confirm Password</label>
+          <input className="input mb-5" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <p className="text-red-500 text-xs">{errors?.confirm}</p>
+          <p className="text-red-500 text-xs">{errors?.main}</p>
+          <button className="btn-primary w-full mt-1.5" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating Account..." : "Sign Up"}</button>
+        </form>
+        <p className="text-center text-text-subtle text-[13px] mt-4.5">Already have an account? <Link className="link" to="/sign-in">Sign In</Link></p>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-1 mt-1">
-        <input className="p-1 pl-1" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <p className="text-red-700">{errors?.email}</p>
-        <input className="p-1 pl-1" type="username" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <p className="text-red-700">{errors?.username}</p>
-        <input className="p-1 pl-1" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <p className="text-red-700">{errors?.password}</p>
-        <input className="p-1 pl-1" type="password" placeholder="Confirm Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        <p className="text-red-700">{errors?.confirm}</p>
-        <p className="text-red-700">{errors?.main}</p>
-        <button className="button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating Account..." : "Sign Up"}</button>
-      </form>
     </div>
   );
 }
