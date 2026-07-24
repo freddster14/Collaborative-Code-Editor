@@ -57,6 +57,19 @@
   animation: fadeUp .4s ease-out both;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 3px solid var(--color-border-input);
+  border-top-color: var(--color-blue);
+  animation: spin .7s linear infinite;
+}
+
 ::selection {
   background: #3b82f655;
 }
@@ -270,7 +283,7 @@ p {
   background: var(--color-panel-2);
   border: 1px solid var(--color-border-modal);
   border-radius: 16px;
-  padding: 24px;
+  padding: 52px 24px 24px;
   position: relative;
 }
 
