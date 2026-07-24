@@ -46,7 +46,7 @@ export default function SignIn() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-16 animate-fade-up">
-      <Link to="/" className="!m-0 !text-[40px] font-bold text-text-h tracking-tight mb-9">CCE</Link>
+      <Link to="/" className="!text-[40px] font-bold text-text-h tracking-tight mb-9">CCE</Link>
       <div className="w-[380px] bg-panel border border-border rounded-2xl px-8 py-9">
         <h1 className="!m-0 !mb-2 !text-[26px]">Sign In</h1>
         <p className="text-text-subtle text-sm mb-6">Enter your email or username and password to sign in</p>
