@@ -6,7 +6,7 @@ export default function Dashboard() {
   const user = useRouteLoaderData('user');
   if (!user) return <Navigate to='/'/>
   return (
-    <div className="max-w-[1120px] w-full mx-auto px-6 box-border relative animate-fade-up">
+    <div className="max-w-[1120px] w-full mx-auto px-6 box-border relative min-h-[80vh] animate-fade-up">
       <Sidebar />
       <CreateForms />
       <Outlet />
