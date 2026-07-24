@@ -57,6 +57,19 @@
   animation: fadeUp .4s ease-out both;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 3px solid var(--color-border-input);
+  border-top-color: var(--color-blue);
+  animation: spin .7s linear infinite;
+}
+
 ::selection {
   background: #3b82f655;
 }
@@ -270,16 +283,16 @@ p {
   background: var(--color-panel-2);
   border: 1px solid var(--color-border-modal);
   border-radius: 16px;
-  padding: 24px;
+  padding: 40px 24px 24px;
   position: relative;
 }
 
 .modal-close {
   position: absolute;
-  right: 16px;
-  top: 16px;
-  width: 28px;
-  height: 28px;
+  right: 14px;
+  top: 14px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -287,7 +300,7 @@ p {
   border: none;
   border-radius: 999px;
   color: var(--color-text-subtle);
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
 }

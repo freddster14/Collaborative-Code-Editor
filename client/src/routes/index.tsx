@@ -9,6 +9,7 @@ import FolderData from "../pages/Folder.tsx";
 import { getRequest, getUser } from "../api/api-requests.ts";
 import Intro from "../pages/Intro.tsx";
 import DocumentData from "../components/DocumentData.tsx";
+import Loading from "../components/Loading.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     Component: Home,
     id: 'user',
     loader: async () =>  await getUser("/user"),
+    hydrateFallbackElement: <Loading />,
     children: [
       {
         index: true,
@@ -34,7 +36,7 @@ const router = createBrowserRouter([
         path: "dashboard",
         id: "root",
         Component: Dashboard,
-        hydrateFallbackElement: <div className=" text-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">Loading...</div>,
+        hydrateFallbackElement: <Loading />,
         children: [
           {
             index: true,
