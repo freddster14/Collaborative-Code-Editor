@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRevalidator } from "react-router-dom";
 import { bodyRequest } from "../api/api-requests";
 import { ApiError, type ErrorType } from "@cce/shared-types";
@@ -31,7 +32,7 @@ export default function EditForm({ docId, value, type, viewEdit }: { docId:numbe
     }
   }
   
-  return (
+  return createPortal(
     <div className="modal-overlay">
       <form className="modal-panel w-[340px] flex flex-col gap-3" onSubmit={handleEdit}>
         <button className="modal-close" type="button" onClick={() => viewEdit(false)}>&times;</button>
@@ -39,7 +40,7 @@ export default function EditForm({ docId, value, type, viewEdit }: { docId:numbe
         <p className="text-red-500 text-xs">{error?.main}</p>
         <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>{isSubmitting ? "Editing..." : "Edit"}</button>
       </form>
-    </div>
-
+    </div>,
+    document.body
   )
 }

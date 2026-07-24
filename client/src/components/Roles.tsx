@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { bodyRequest, getRequest } from "../api/api-requests";
 import { AVAILABLE_ROLES } from "../utils/contants";
 import { ApiError, Role, type ErrorType, type RoleType, type UserRole } from "@cce/shared-types";
@@ -176,8 +177,8 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
     }
   }
 
-  if(!data) return <div className="modal-overlay"></div>;
-  return(
+  if(!data) return createPortal(<div className="modal-overlay"></div>, document.body);
+  return createPortal(
     <div className="modal-overlay">
       { addNew
         ? !viewSelected
@@ -264,6 +265,7 @@ export default function Roles({docId, viewRoles, userRole}: {docId:number, viewR
           </div>
         : <div className="modal-panel w-[400px] flex items-center gap-2 text-text-subtle text-sm">{userRole === "OWNER" ? "No one has access." : "Nothing to view."} <button className="link" onClick={() => setAddNew(true)}>ADD USERS</button>.</div>
       }
-    </div>
+    </div>,
+    document.body
   )
 }

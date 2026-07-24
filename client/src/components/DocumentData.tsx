@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import { PRIVILED_ROLES, ROLE_COLORS } from "../utils/contants";
 import Options from "./Options";
 import type { DocumentData } from "@cce/shared-types";
@@ -7,7 +7,18 @@ import type { DocumentData } from "@cce/shared-types";
 export default function DocumentData() {
   const data: DocumentData[] = useLoaderData();
   const navigate = useNavigate();
+  const location = useLocation();
   const [options , setOptions] = useState<string>('');
+
+  const emptyMessage = location.pathname.includes('recent')
+    ? "No recently opened documents"
+    : location.pathname.includes('shared')
+    ? "No documents shared with you"
+    : "No documents created, start a project to create documents";
+
+  if (data.length === 0) {
+    return <div className="text-text-subtle text-sm text-center py-6">{emptyMessage}</div>
+  }
 
   return(
     <div className="max-w-[640px] mx-auto flex flex-col gap-2.5 py-2">
